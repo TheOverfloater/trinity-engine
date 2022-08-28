@@ -369,12 +369,7 @@ void CHud :: Init( void )
 	HOOK_MESSAGE( FreeEnt );
 	HOOK_MESSAGE( Particle );
 
-	gPropManager.Init();
-	gTextureLoader.Init();
-	gBSPRenderer.Init();
-	gParticleEngine.Init();
-	gWaterShader.Init();
-	gMirrorManager.Init();
+	R_Init();
 //RENDERERS END
 
 	m_iLogo = 0;
@@ -448,11 +443,7 @@ CHud :: ~CHud()
 	}
 
 //RENDERERS START
-	gTextureLoader.Shutdown();
-	gBSPRenderer.Shutdown();
-	gPropManager.Shutdown();
-	gWaterShader.Shutdown();
-	gParticleEngine.Shutdown();
+	R_Shutdown();
 //RENDERERS END
 
 	ServersShutdown();
@@ -578,13 +569,7 @@ void CHud :: VidInit( void )
 	GetClientVoiceMgr()->VidInit();
 
 //RENDERERS START
-	gTextureLoader.VidInit();
-	gWaterShader.VidInit();
-	gBSPRenderer.VidInit();
-	gParticleEngine.VidInit();
-	gMirrorManager.VidInit();
-	g_StudioRenderer.VidInit();
-	gPropManager.VidInit();
+	R_VidInit();
 //RENDERERS_END
 }
 

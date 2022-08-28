@@ -61,6 +61,8 @@ int current_ext_texture_id = BASE_EXT_TEXTURE_ID;
 vec3_t g_vecFull(1.0f, 1.0f, 1.0f); // color of 3d attenuation texture
 vec3_t g_vecZero(0.0f, 0.0f, 0.0f); // color of 3d attenuation texture
 
+glstate_t g_savedGLState;
+
 double sqrt(double x);
 
 //==========================
@@ -813,7 +815,10 @@ void R_DrawNormalTriangles( void )
 	gBSPRenderer.DrawNormalTriangles();
 
 	// Save everything at this point too
-	gBSPRenderer.SaveMultiTexture();
+	R_SaveGLStates();
+
+	// Apply fog
+	RenderFog();
 
 	// Render props on the list
 	gPropManager.RenderProps();
@@ -834,7 +839,7 @@ void R_DrawNormalTriangles( void )
 	gParticleEngine.DrawParticles();
 
 	//Restore
-	gBSPRenderer.RestoreMultiTexture();
+	R_RestoreGLStates();
 }
 
 /*
@@ -1281,4 +1286,109 @@ void R_DisableSteamMSAA( void )
 	gEngfuncs.pfnClientCmd("gl_texturemode GL_LINEAR_MIPMAP_LINEAR");
 	gEngfuncs.pfnClientCmd("gl_round_down 0");
 	gEngfuncs.pfnClientCmd("_restart");
+}
+
+void R_SaveGLStates( void )
+{
+	glPushAttrib(GL_TEXTURE_BIT);
+
+	glGetIntegerv(GL_ACTIVE_TEXTURE_ARB, &g_savedGLState.active_texunit);
+	glGetIntegerv(GL_CLIENT_ACTIVE_TEXTURE_ARB, &g_savedGLState.active_clienttexunit);
+
+	g_savedGLState.blending_enabled = glIsEnabled(GL_BLEND) ? true : false;
+
+	glMatrixMode(GL_TEXTURE);
+	glPushMatrix();
+	glLoadIdentity();
+	glMatrixMode(GL_MODELVIEW);
+
+	g_savedGLState.alphatest_enabled = glIsEnabled(GL_ALPHA_TEST) ? true : false;
+	glGetIntegerv(GL_ALPHA_TEST_FUNC, &g_savedGLState.alphatest_func);
+	glGetFloatv(GL_ALPHA_TEST_REF, &g_savedGLState.alphatest_value);
+
+}
+
+void R_RestoreGLStates( void )
+{
+	glPopAttrib();
+
+	// load saved matrix for steam version
+	glMatrixMode(GL_TEXTURE);
+	glPopMatrix();
+	glMatrixMode(GL_MODELVIEW);
+
+	gBSPRenderer.glActiveTextureARB( g_savedGLState.active_texunit );
+	gBSPRenderer.glClientActiveTextureARB( g_savedGLState.active_clienttexunit );
+
+	if (g_savedGLState.blending_enabled) 
+		glEnable(GL_BLEND);
+	else 
+		glDisable(GL_BLEND);
+
+	if (g_savedGLState.alphatest_enabled) 
+		glEnable(GL_ALPHA_TEST);
+	else 
+		glDisable(GL_ALPHA_TEST);
+
+	glAlphaFunc(g_savedGLState.alphatest_func, g_savedGLState.alphatest_value);
+}
+
+/*
+=================
+R_Init
+
+=================
+*/
+void R_Init( void )
+{
+	glPushAttrib(GL_TEXTURE_BIT);
+
+	gPropManager.Init();
+	gTextureLoader.Init();
+	gBSPRenderer.Init();
+	gParticleEngine.Init();
+	gWaterShader.Init();
+	gMirrorManager.Init();
+
+	glPopAttrib();
+}
+
+/*
+=================
+R_VidInit
+
+=================
+*/
+void R_VidInit( void )
+{
+	glPushAttrib(GL_TEXTURE_BIT);
+
+	gTextureLoader.VidInit();
+	gWaterShader.VidInit();
+	gBSPRenderer.VidInit();
+	gParticleEngine.VidInit();
+	gMirrorManager.VidInit();
+	g_StudioRenderer.VidInit();
+	gPropManager.VidInit();
+
+	glPopAttrib();
+}
+
+/*
+=================
+R_Shutdown
+
+=================
+*/
+void R_Shutdown( void )
+{
+	glPushAttrib(GL_TEXTURE_BIT);
+
+	gTextureLoader.Shutdown();
+	gBSPRenderer.Shutdown();
+	gPropManager.Shutdown();
+	gWaterShader.Shutdown();
+	gParticleEngine.Shutdown();
+
+	glPopAttrib();
 }

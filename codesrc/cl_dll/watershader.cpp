@@ -925,7 +925,7 @@ void CWaterShader::DrawScene( ref_params_t *pparams, bool isrefracting )
 	// Draw world
 	gBSPRenderer.DrawNormalTriangles();
 
-	gBSPRenderer.SaveMultiTexture();
+	R_SaveGLStates();
 
 	if((m_pCvarWaterShader->value > 1) || isrefracting)
 	{
@@ -985,7 +985,7 @@ void CWaterShader::DrawScene( ref_params_t *pparams, bool isrefracting )
 		}
 	}
 
-	gBSPRenderer.RestoreMultiTexture();
+	R_RestoreGLStates();
 	m_iNumPasses++;
 }
 

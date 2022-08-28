@@ -957,6 +957,8 @@ void CBSPRenderer::SetupRenderer ( void )
 	if (!m_bReloaded)
 		return;
 
+	glPushAttrib(GL_TEXTURE_BIT);
+
 	// Get pointer to world
 	m_pWorld = IEngineStudio.GetModelByIndex(1);
 	m_bReloaded = false;
@@ -990,6 +992,8 @@ void CBSPRenderer::SetupRenderer ( void )
 
 	gTextureLoader.FreeWADFiles();
 	gPropManager.ClearEntityData();
+
+	glPopAttrib();
 }
 
 /*
@@ -1952,155 +1956,6 @@ void CBSPRenderer::ResetRenderer( void )
 
 /*
 ====================
-SaveMultiTexture
-
-====================
-*/
-void CBSPRenderer::SaveMultiTexture( void )
-{
-	RenderFog();
-	glPushAttrib(GL_ALL_ATTRIB_BITS);
-
-	glGetIntegerv(GL_ACTIVE_TEXTURE_ARB, &m_iActiveTU);
-	glGetIntegerv(GL_CLIENT_ACTIVE_TEXTURE_ARB, &m_iCLActiveTU);
-
-	if (glIsEnabled(GL_BLEND)) 
-		m_iBlendActive = TRUE;
-	else 
-		m_iBlendActive = FALSE;
-
-	glActiveTextureARB( GL_TEXTURE0_ARB );
-
-	if (glIsEnabled(GL_TEXTURE_2D)) 
-		m_iTU1tex2dEnable = TRUE;
-	else 
-		m_iTU1tex2dEnable = FALSE;
-
-	glGetIntegerv(GL_TEXTURE_BINDING_2D, &m_iTU1bind);
-	glGetTexEnviv(GL_TEXTURE_ENV, GL_TEXTURE_ENV_MODE, &m_iTU1BlendMode);
-
-	glActiveTextureARB( GL_TEXTURE1_ARB );
-
-	if (glIsEnabled(GL_TEXTURE_2D)) 
-		m_iTU2tex2dEnable = TRUE;
-	else 
-		m_iTU2tex2dEnable = FALSE;
-
-	glGetIntegerv(GL_TEXTURE_BINDING_2D, &m_iTU2bind);
-	glDisable(GL_TEXTURE_2D); // disable texturing at 2nd TU
-
-	glActiveTextureARB( GL_TEXTURE2_ARB );
-
-	if (glIsEnabled(GL_TEXTURE_2D)) 
-		m_iTU3tex2dEnable = TRUE;
-	else 
-		m_iTU3tex2dEnable = FALSE;
-
-	glGetIntegerv(GL_TEXTURE_BINDING_2D, &m_iTU3bind);
-	glDisable(GL_TEXTURE_2D);
-
-	glMatrixMode(GL_TEXTURE);
-	glPushMatrix();
-	glLoadIdentity();
-	glMatrixMode(GL_MODELVIEW);
-
-	glActiveTextureARB( GL_TEXTURE3_ARB );
-
-	if (glIsEnabled(GL_TEXTURE_2D)) 
-		m_iTU4tex2dEnable = TRUE;
-	else 
-		m_iTU4tex2dEnable = FALSE;
-
-	glGetIntegerv(GL_TEXTURE_BINDING_2D, &m_iTU4bind);
-	glDisable(GL_TEXTURE_2D);
-
-	glActiveTextureARB( GL_TEXTURE0_ARB );
-
-	glGetIntegerv(GL_ALPHA_TEST_FUNC, &m_iAlphaFunc);
-	glGetFloatv(GL_ALPHA_TEST_REF, &m_AlphaVal);
-
-	if (glIsEnabled(GL_ALPHA_TEST)) 
-		m_iAlphaTestEnabled = TRUE;
-	else 
-		m_iAlphaTestEnabled = FALSE;
-};
-
-/*
-====================
-RestoreMultiTexture
-
-====================
-*/
-void CBSPRenderer::RestoreMultiTexture( void )
-{
-	glPopAttrib();
-	glActiveTextureARB( GL_TEXTURE0_ARB );
-
-	if (m_iTU1tex2dEnable) 
-		glEnable(GL_TEXTURE_2D);
-	else 
-		glDisable(GL_TEXTURE_2D);
-
-	glBindTexture(GL_TEXTURE_2D, m_iTU1bind);
-	glTexEnvi(GL_TEXTURE_ENV, GL_TEXTURE_ENV_MODE, m_iTU1BlendMode);
-
-	glActiveTextureARB( GL_TEXTURE1_ARB );
-
-	if (m_iTU2tex2dEnable) 
-		glEnable(GL_TEXTURE_2D);
-	else 
-		glDisable(GL_TEXTURE_2D);
-
-	glBindTexture(GL_TEXTURE_2D, m_iTU2bind);
-
-	glActiveTextureARB( GL_TEXTURE2_ARB );
-
-	if (m_iTU3tex2dEnable) 
-		glEnable(GL_TEXTURE_2D);
-	else 
-		glDisable(GL_TEXTURE_2D);
-
-	glBindTexture(GL_TEXTURE_2D, m_iTU3bind);
-
-	// this must be set for steam version, so it will render detail textures correctly
-	glTexEnvi(GL_TEXTURE_ENV, GL_TEXTURE_ENV_MODE, GL_COMBINE_ARB);
-	glTexEnvi(GL_TEXTURE_ENV, GL_COMBINE_RGB_ARB, GL_MODULATE);
-	glTexEnvi(GL_TEXTURE_ENV, GL_SOURCE0_RGB_ARB, GL_PREVIOUS_ARB);
-	glTexEnvi(GL_TEXTURE_ENV, GL_SOURCE1_RGB_ARB, GL_TEXTURE);
-	glTexEnvi(GL_TEXTURE_ENV, GL_RGB_SCALE_ARB, 2);
-
-	// load saved matrix for steam version
-	glMatrixMode(GL_TEXTURE);
-	glPopMatrix();
-	glMatrixMode(GL_MODELVIEW);
-
-	glActiveTextureARB( GL_TEXTURE3_ARB );
-
-	if (m_iTU4tex2dEnable) 
-		glEnable(GL_TEXTURE_2D);
-	else 
-		glDisable(GL_TEXTURE_2D);
-
-	glBindTexture(GL_TEXTURE_2D, m_iTU4bind);
-
-	glActiveTextureARB( m_iActiveTU );
-	glClientActiveTextureARB( m_iCLActiveTU );
-
-	if (m_iBlendActive) 
-		glEnable(GL_BLEND);
-	else 
-		glDisable(GL_BLEND);
-
-	if (m_iAlphaTestEnabled) 
-		glEnable(GL_ALPHA_TEST);
-	else 
-		glDisable(GL_ALPHA_TEST);
-
-	glAlphaFunc(m_iAlphaFunc, m_AlphaVal);
-};
-
-/*
-====================
 ResetCache
 
 ====================
@@ -2197,10 +2052,12 @@ void CBSPRenderer::DrawNormalTriangles( void )
 	else
 		m_iVisFrame = -2;
 
-	SaveMultiTexture();
+	R_SaveGLStates();
+	RenderFog();
+
 	DrawSky();
 	DrawWorld();
-	RestoreMultiTexture();
+	R_RestoreGLStates();
 
 	// So it's called only once
 	m_bCanDraw = false;
@@ -5965,7 +5822,9 @@ void CBSPRenderer::DrawShadowPasses( void )
 	float time = gEngfuncs.GetClientTime();
 	cl_dlight_t *dl	= m_pDynLights;
 
-	SaveMultiTexture();
+	R_SaveGLStates();
+	RenderFog();
+
 	for (int i = 0; i < MAX_DYNLIGHTS; i++, dl++)
 	{
 		if (dl->die < time || !dl->radius || !dl->cone_size || dl->noshadow)
@@ -5974,7 +5833,7 @@ void CBSPRenderer::DrawShadowPasses( void )
 		m_pCurrentDynLight = dl;
 		CreateShadowMap();
 	}
-	RestoreMultiTexture();
+	R_RestoreGLStates();
 }
 
 /*
