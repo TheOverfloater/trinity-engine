@@ -1,0 +1,26 @@
+life 5
+lifevar 2
+
+fadedelay 1
+
+minvel 0
+maxvel 0
+
+maxofs 0
+
+texture splash3
+mainalpha 0.5
+display 1
+
+scale 22.7
+scalevar 6.0
+scaledampdelay 0.001
+scaledampfactor 29.9
+
+gravity 0
+
+startparticles 1
+
+pcolr 100
+pcolg 100
+pcolb 148

@@ -1,0 +1,31 @@
+systemshape 0
+
+life 10.5
+lifevar 3
+overbright 1
+
+fadedelay 6
+
+minvel 5
+maxvel 8
+
+maxofs 1
+
+texture smoke03
+rendermode 2
+
+scale 1
+scalevar 0.5
+scaledampfactor -2
+
+rotationvel 80
+rotationdamp -0.01
+
+impactdamp 0.2
+
+mainalpha 0.3
+
+intensity 20
+maxparticles 160
+
+lightmaps 1

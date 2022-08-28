@@ -1,0 +1,72 @@
+Trinity Rendering Engine - Copyright Andrew Lucas 2009-2012
+
+The Trinity Engine is free software, distributed in the hope th-
+at it will be useful, but WITHOUT ANY WARRANTY; without even the 
+implied warranty of MERCHANTABILITY or FITNESS FOR A PARTICULAR 
+PURPOSE. See the GNU Lesser General Public License for more det-
+ails.
+
+===============Client Side:
+
+Renderer files:
+cl_dll\bsprenderer.cpp
+cl_dll\bsprenderer.h
+cl_dll\frustum.cpp
+cl_dll\frustum.h
+cl_dll\mirrormanager.cpp
+cl_dll\mirrormanager.h
+cl_dll\particle_engine.cpp
+cl_dll\particle_engine.h
+cl_dll\propmanager.cpp
+cl_dll\propmanager.h
+cl_dll\rendererdefs.cpp
+cl_dll\rendererdefs.h
+cl_dll\StudioModelRenderer.cpp
+cl_dll\StudioModelRenderer.h
+cl_dll\watershader.cpp
+cl_dll\watershader.h
+
+common\const.h
+common\com_model.h
+engine\studio.h
+common\gl
+
+This contains a list of all the files that have been modified in
+some way.
+
+cl_dll\cdll_int.cpp
+cl_dll\entity.cpp
+cl_dll\ev_hldm.cpp
+cl_dll\ev_hldm.h
+cl_dll\hl\hl_baseentity.cpp
+cl_dll\GameStudioModelRenderer.cpp
+cl_dll\hud.cpp
+cl_dll\hud.h
+cl_dll\hud_msg.cpp
+cl_dll\tri.cpp
+cl_dll\view.cpp
+
+===============Server Side:
+
+dlls\bmodels.cpp
+dlls\cbase.cpp
+dlls\cbase.h
+dlls\client.cpp
+dlls\crowbar.cpp
+dlls\combat.cpp
+dlls\doors.cpp
+dlls\effects.cpp
+dlls\effects.h
+dlls\func_break.cpp
+dlls\func_break.h
+dlls\ggrenade.cpp
+dlls\islave.cpp
+dlls\lights.cpp
+dlls\player.cpp
+dlls\player.h
+dlls\subs.cpp
+dlls\util.cpp
+dlls\util.h
+dlls\weapons.cpp
+dlls\weapons.h
+dlls\world.cpp

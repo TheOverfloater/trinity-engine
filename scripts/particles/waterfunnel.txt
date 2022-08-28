@@ -1,0 +1,35 @@
+systemshape 1
+systemsize 30
+
+life 2
+lifevar 0.5
+
+minvel 300
+maxvel 600
+
+maxofs 20
+
+pcolr 98
+pcolg 98
+pcolb 120
+
+texture splash2
+display 0
+
+scale 62
+scalevar 5
+scaledampdelay 1.3
+scaledampfactor -2
+
+collision 1
+rotationvel 120
+rotationdamp 0.03
+rotationdampdelay 1
+
+mainalpha 0.4
+colwater 1
+
+gravity 1
+
+intensity 150
+maxparticles -1

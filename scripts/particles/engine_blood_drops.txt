@@ -1,0 +1,34 @@
+life 2
+lifevar 0.5
+
+fadedelay 1.2
+fadein 0.1
+
+minvel 70
+maxvel 90
+maxofs 90
+
+texture blood
+rendermode 2
+mainalpha 0.5
+
+scale 13
+scalevar 2
+scaledampfactor -8
+
+rotationvel 40
+rotationvar 5
+
+pcolr 150
+pcolg 0
+pcolb 0
+
+gravity 1
+
+maxparticles 5
+intensity 100
+
+lightmaps 3
+
+create engine_blood_ground.txt
+collision 5

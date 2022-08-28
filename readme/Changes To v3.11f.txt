@@ -1,0 +1,287 @@
+v1.11:
+I've solved the player rendering bug, it was an e-
+rror I made in the function call order.
+
+Also, I know that a HLFX forum member named Uncle
+Misha claimed I was using his blinking monster fix
+in the engine, but that's a mistake actually. The
+mod in which I had developed Trinity used it, but
+I removed it when porting the code to the new SDK,
+but I forgot to remove one part. So no more worry
+over credits. I didn't intend to have it in. It's
+removed now.
+
+For any possible future updates, check this link:
+https://skydrive.live.com/redir.aspx?cid=ce9cc3fbfe20ab9a&resid=CE9CC3FBFE20AB9A!161&parid=root
+If you have anything to report, write an e-mail to:
+boeschitt@hotmail.com
+
+V1.12:
+Added the ability to have the player mirrored
+in mirrors by the te_mirror_players cvar.
+
+Made readme for Prop Manager and mirror manager m-
+ore descriptive.
+
+v1.13:
+I found a totally unexpected bug in the water sha-
+der that was caused by the addition of player mir-
+roring. I fixed this now.
+
+v1.14:
+I've added better texture flag functionality in 
+texture_flags.txt. Now three new flags are availa-
+ble:
+nomipmap - Disable mipmapping on replaced textures.
+eraseflags - Remove original flags.
+fullbright - Self explanatory.
+Read up the readme for Studiomodels to get a detai-
+led explanation of this feature.
+
+I've also fixed p_ model rendering. It was another
+thing I forgot I originally removed from the mod b-
+ase I worked this on originally. I re-added it.
+
+I've added shadow mapping to the projective lights,
+read up on it in the BSP Renderer readme.
+
+I've also modified the error prompting system, as I
+had to realise that error messages called from the
+initialization call don't appear on the consle, so
+if the engine has trouble with your hardware now y-
+ou will be warned.
+
+v1.15:
+I've replaced DevIL's TGA Loader with my own versi-
+on, which supports RLE and uncumpressed tga files,
+this should fix some of the texture problems people
+had.
+
+Also introduced a check if the texture resolution's
+on the power of two, this caused numerous graphical
+bugs on people's computers.
+
+I also added power of two resizing to models loaded
+by Trinity, this should make sure nothing messes up
+from now. Finally, I got rid of two redundant func-
+tions from the prop manager class.
+
+v1.16:
+I fixed a few things around texture loading on stu-
+diomodels, and added a TGA texture exporter to the
+texture loader class.
+
+Most important is, I got rid of all the glDepthRan-
+ge functions from the code, be sure to be rid of t-
+hose if you are using an earlier SDK from everywhe-
+re. If you don't, you'll have major problems.
+
+v1.17
+This is an important fix, it fixes any issues that
+were present with a new vluzanc's compiler release
+that seems to have changed something in lightmap
+storage.
+
+v1.18
+I made detail texturing capable of supporting ani-
+mated textures, and made it a bit faster too.
+
+A previous code that enabled non-power of two tex-
+tures for mirrors and water were removed too, for
+maximum stability.
+
+v1.19
+A bug was fixed that could've caused problems upon
+fallback with dynamic lights and animated textures.
+A seperate bug that occured with fallback to non-s-
+hader mode was fixed too. Also, I finally fixed an-
+other missed call that will enable shadows on env_-
+spotlights.
+
+Also fixed conveyors to work properly now. The blue
+light bug some people encountered is fixed now too,
+this was encountered when using func_conveyors.
+
+Added a scale parameter to client-side managed it-
+em_generic entities. The fgd entries were updated
+too.
+
+v1.2:
+Fixed a crash that occured because of HL not mana-
+ging texture entries properly.
+
+v1.2-final:
+The final release of Trinity, there will be no su-
+bsequent updates. I made some very tough fixes to
+the code to make sure no problems would occur.
+
+A lot of hardy state sets were incorporated to ma-
+ke sure problems would not occur, as I got confli-
+cting results.
+Also, anyone with Geforce FX, don't be so surpris-
+ed in case you get errors, that is not a graphics
+card, I got godawful results with that series even
+if I used the cleanest shaders I could dig out. It
+is simply horribly botched and I won't take it se-
+riously, at all.
+I know some things might not be properly fixed, t-
+hat was left in because I did not find a cause, b-
+ut I tested this on most systems I could dig up a-
+nd got proper results.
+
+I know I rushed some releases, I wanted to be done
+with this back in September. I put more time to t-
+his one and finally fixed the game breaking ones.
+
+v1.3:
+Fixed a game breaking bug regarding players and s-
+kyboxes.
+v1.4:
+Fixed conveyors and dlights.
+
+v2.0:
+A major improvement: Minor bugfixes on some parts.
+Replaced Paranoia's sloppy envpos_* maths with my
+own, now objects in the sky should function fine
+even if they are moving entities. Also fixed a 
+mistake in the AddToFullPack function in client.cpp
+that didn't let sky entities pass on to the client
+side sometimes because VIS culled them out.
+
+Added .dds support. Download ATI's The Compressonator 
+to compress tga files to .dds files. Now, if
+the texture loader loads something, it'll first see if 
+it can find a .dds file. If it can't, it loads a .tga 
+file.
+The DDS format allows you to save a tremendous am-
+ount of drive space and memory through proper use,
+so I advise you to use it. Be sure to compress pi-
+ctures that use an alpha channel with the DXT1 fo-
+rmat, while anything with an alpha channel must be
+compressed with DXT5.
+
+Fixed the exporting function te_exportdetail. There 
+was a mistake in the previous code. Also now you 
+won't need to make sure you have your textures
+loaded by the HL engine. The code is capable of 
+loading the textures out of WAD files. Also now is
+some more information saved, so fallback lights 
+will light them up properly now too.
+
+v2.1:
+I don't know how, but the code disabled fonts ins-
+ide the Steam menu. I didn't test this on Steam HL
+before releasing it because I can't debug that at
+all. Now it's fixed. The fix is in tri.cpp, 
+HUD_DrawTransparentTriangles under "2012-02-23".
+
+v2.2:
+The WAD loader section was extended to load files
+from the BSP too, and it got optimized for better
+performance. A possible crash source was elimina-
+ted from the .edd file code.
+
+Some functions were moved from the model renderer
+class to the texture loader for better organizat-
+ion of code.
+
+Now Trinity automatically reloads all WAD textures
+itself, this achieves better texture quality as 
+GoldSrc tends to botch it on it's textures.
+
+Fuctions in tri.cpp's HUD_DrawNormalTriangles and
+DrawTransparentTriangles are now coupled into fun-
+ctions defined in rendererdefs.cpp and .h, same
+with the calls that were in V_CalcRefDef in view.-
+cpp. This wasdone to allow for better modification 
+of later code. All these changes are under: 
+"2012-02-25"
+
+v2.3:
+Changed some code that could've lead to crashes or
+unstable functionality.
+
+v2.4:
+Fixed some player model problems people were having 
+occasionally. Fixed a problem in the exportdetail code.
+Inserted a warning to those who have Paranoia's 
+shitty dll at use.
+
+v2.5:
+Fixed a random crash.
+
+v2.6:
+This is a major bugfix and optimization. A lot got
+optimized in world rendering, it should be visibly
+faster now.
+Also solved a bug that occurred in Steam HL, where
+you might've seen textures pop up in the center of
+the screen while loading a map.
+Added alternate texture use to env_spotlights, and
+added the ability to disable shadow map generation
+on these entities. Be sure to add borders to your
+flashlight textures manually.
+Added seperate fog settings for the skybox.
+
+v2.7:
+Fixed some bugs
+
+v2.8:
+Fixed some more bugs.
+
+v2.9:
+Fixed MORE bugs.
+
+v3.0:
+Fixed ANOTHER damn bug.
+Also, flashlight use textures now automatically get
+a border added. This however, will only work with
+.tga files. Not .dds.
+
+v3.01:
+Robotnik.
+
+v3.02:
+Fixed a bug that occured if water shaders were used
+in a map with skybox objects.
+
+v3.03:
+Fixed some lightmapping problems, added proper fullbrighting 
+on non-lit maps. Fixed some lighting problems on models.
+
+v3.04:
+Fixed some problems with alternate spotlight textures.
+
+v3.05:
+Did some refurbishing on stuff.
+
+v3.05f:
+Fixed a major bug. No other bugs found.
+
+v3.06f:
+Fixed a game-breaking bug.
+
+v3.07f:
+fixed a crash related to texture loading.
+
+v3.08f:
+Spotlight problem solved, as well as a fuckton of other bugs. 
+Thanks to Hunk for bugtesting.
+
+v3.10f:
+Fixes introduced:
+ - Fix for animated textures on buttons not displaying
+ properly unless a flashlight was shone upon them.
+ - Removed numerous memory leaks in the engine.
+ - Fixed an issue with textures being set to not repeat,
+ causing world textures to not render properly.
+ - Fixed func_water, so it now can move like it originally
+ did in goldsrc.
+ - Added in a safeguard so Steam's MSAA is disabled when
+ the engine is started. This way, Trinity will be fully
+ compatible with current Steampipe HL versions. This way
+ you shouldn't need to set -nofbo in the command line.
+ 
+v3.11f:
+ - Fixed an issue with model rendering when pev->skin was
+ less than zero.

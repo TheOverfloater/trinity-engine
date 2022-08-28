@@ -1,0 +1,35 @@
+systemshape 2
+systemsize 1200
+randomdir 1
+
+life -1
+
+fadein 0.5
+
+pcolr 255
+pcolg 255
+pcolb 255
+
+scale 25
+scalevar 2
+scaledampfactor -45
+
+rotationvel 60
+rotationdamp 0.001
+
+texture smoke02
+mainalpha 0.06
+
+collision 1
+gravity 0.05
+
+intensity 60
+maxparticles -1
+
+fadedistfar 256
+fadedistnear 128
+
+windtype 2
+windvar 40
+windmult 1
+maxheight 400

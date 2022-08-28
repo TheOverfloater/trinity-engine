@@ -1,0 +1,51 @@
+systemshape 1
+
+life 10.5
+lifevar 3
+overbright 0
+randomdir 1
+systemsize 16
+
+fadedelay 6
+
+minvel 25
+maxvel 35
+
+maxofs 1
+
+texture leaf02
+rendermode 2
+
+scale 5
+scalevar 1
+
+rotxvel 25
+rotxvar 20
+
+rotyvel 30
+rotyvar 15
+
+impactdamp 0.2
+
+mainalpha 1
+
+intensity 25
+maxparticles -1
+
+lightmaps 1
+colwater 1
+
+windx 25
+windy 25
+windvar 70
+
+windtype 2
+windmult 0.5
+
+gravity 0.037
+
+collision 5
+create groundleaf.txt
+watercreate ripples.txt
+
+

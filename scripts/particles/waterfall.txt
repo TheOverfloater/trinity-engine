@@ -1,0 +1,34 @@
+systemshape 1
+systemsize 250
+
+life 4
+lifevar 0.5
+
+minvel 700
+maxvel 800
+
+maxofs 40
+
+pcolr 98
+pcolg 98
+pcolb 120
+
+texture splash4
+display 0
+
+scale 262
+scalevar 5
+scaledampdelay 0
+scaledampfactor -120
+
+rotationvel 120
+rotationdamp 0.03
+rotationdampdelay 1
+
+mainalpha 0.4
+colwater 1
+
+gravity 1
+
+intensity 200
+maxparticles -1

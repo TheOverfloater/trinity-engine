@@ -1,0 +1,31 @@
+systemshape 1
+randomdir 1
+systemsize 200
+life -1
+
+minvel 5
+maxvel 10
+
+fadein 1
+
+scale 33
+scalevar 2
+scaledampfactor -45
+
+rotationvel 60
+rotationdamp 0.001
+
+texture smoke03
+mainalpha 0.1
+
+collision 1
+gravity 0.01
+
+intensity 5
+maxparticles -1
+
+windtype 2
+windvar 3
+windmult 1
+
+lightmaps 1

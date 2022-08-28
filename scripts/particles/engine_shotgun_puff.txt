@@ -1,0 +1,29 @@
+life 0.4
+lifevar 0.2
+
+fadedelay 0.01
+
+minvel 150
+maxvel 550
+
+maxofs 128
+
+pcolr 255
+pcolg 255
+pcolb 64
+
+texture yellowflare
+
+scale 2
+scalevar 1
+scaledampfactor 1
+veldamp 1
+
+collision 0
+rotationvel 120
+
+impactdamp 0.9
+
+gravity 0.7
+
+startparticles 28

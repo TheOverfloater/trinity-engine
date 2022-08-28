@@ -1,0 +1,22 @@
+life 60
+lifevar 0
+
+minvel 10
+maxvel 10
+
+texture explo01
+
+scale 20
+
+rotationvel 80
+rotationdamp 0.02
+
+veldamp 0.001
+veldampdelay 0.01
+
+startparticles 1
+
+lightmaps 1
+
+tracerdist 1
+create nuke_pillar.txt

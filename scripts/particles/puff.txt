@@ -1,0 +1,35 @@
+randomdir 1
+overbright 1
+
+life 2
+lifevar 0.1
+
+fadedelay 1.6
+
+minvel 15
+maxvel 25
+
+pcolr 255
+pcolg 255
+pcolb 255
+
+texture yellowflare
+display 0
+
+veldampdelay 7
+veldamp 0.0
+
+scale 0.3
+scalevar 5
+scaledampdelay 0.3
+scaledampfactor -5
+
+rotationvel 120
+rotationdamp 0.001
+rotationdampdelay 1
+
+impactdamp 0.8
+
+gravity 0
+
+startparticles 100

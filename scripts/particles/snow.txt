@@ -1,0 +1,29 @@
+systemshape 2
+systemsize 500
+
+life -1
+stuckdie 2
+
+fadein 15
+
+pcolr 255
+pcolg 255
+pcolb 255
+
+texture snowflake
+mainalpha 1
+
+scale 0.6
+scalevar 0.2
+
+collision 4
+gravity 0.05
+
+intensity 1000
+maxparticles -1
+
+windtype 2
+windvar 110
+windmult 1
+windmultvar 0.3
+maxheight 500

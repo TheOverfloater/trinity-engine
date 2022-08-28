@@ -1,0 +1,22 @@
+life 30
+
+fadedelay 25
+texture blood_core
+rendermode 2
+
+scale 10
+scalevar 5
+
+impactdamp 0.2
+
+mainalpha 1
+
+startparticles 1
+
+pcolr 150
+pcolg 0
+pcolb 0
+
+lightmaps 3
+display 2
+

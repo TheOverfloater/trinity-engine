@@ -1,0 +1,22 @@
+life 0.5
+lifevar 0
+
+fadedelay 0.05
+
+minvel 0
+maxvel 0
+
+maxofs 0
+
+texture shockwave
+rendermode 1
+
+scale 7
+scaledampdelay 0
+scaledampfactor -2005
+
+collision 0
+gravity 0.0
+mainalpha 0.6
+
+startparticles 1

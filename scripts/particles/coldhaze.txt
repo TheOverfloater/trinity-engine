@@ -1,0 +1,24 @@
+systemshape 1
+systemsize 16
+randomdir 0
+
+life 4
+
+fadein 0.5
+fadedelay 2
+
+scale 8
+scalevar 2
+scaledampfactor -6
+
+rotationvel 8
+rotationdamp 0.001
+
+texture smoke02
+mainalpha 0.85
+
+gravity 0.006
+
+intensity 10
+maxparticles -1
+lightmaps 1

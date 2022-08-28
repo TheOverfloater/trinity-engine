@@ -1,0 +1,51 @@
+systemsize 50
+randomdir 0
+overbright 0
+
+life 2
+lifevar 0.5
+
+fadein 0.2
+
+minvel 80
+maxvel 90
+
+maxofs 10
+
+pcolr 255
+pcolg 0
+pcolb 0
+
+scolr 255
+scolg 128
+scolb 92
+
+ctransd 0.3
+ctranst 0.4
+ctransv 0.3
+
+texture yellowflare
+display 0
+
+veldampdelay 7
+veldamp 0.0
+
+scale 6
+scalevar 5
+scaledampdelay 1.3
+scaledampfactor -2
+
+collision 2
+rotationvel 120
+rotationdamp 0.8
+rotationdampdelay 1
+
+impactdamp 0.8
+
+gravity 0.01
+
+deathcreate particlepuff.txt
+
+intensity 10
+startparticles 0
+maxparticles -1

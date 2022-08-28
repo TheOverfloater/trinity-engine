@@ -1,0 +1,28 @@
+systemshape 2
+systemsize 400
+
+life 2
+
+fadein 1
+
+pcolr 255
+pcolg 255
+pcolb 255
+
+texture rain
+display 1
+mainalpha 0.75
+
+scale 6
+scalevar 2
+
+collision 1
+
+gravity 0.6
+
+intensity 800
+maxparticles -1
+maxheight 500
+
+systemfadedelay 5
+systemfadetime 5

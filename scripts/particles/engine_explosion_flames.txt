@@ -1,0 +1,33 @@
+randomdir 1
+systemsize 5
+
+life 0.8
+lifevar 0.2
+
+fadedelay 0.6
+
+minvel 10
+maxvel 20
+
+maxofs 11
+
+texture explo01
+rendermode 1
+
+scale 45
+scalevar 5
+scaledampdelay 0.01
+scaledampfactor -25
+
+rotationvel 80
+rotationdamp 0.02
+
+collision 4
+gravity 0.01
+mainalpha 0.6
+
+startparticles 35
+intensity 240
+maxparticles 60
+
+lightmaps 1

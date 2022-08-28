@@ -1,0 +1,28 @@
+life 3
+lifevar 1
+overbright 0
+randomdir 1
+
+fadedelay 1.5
+
+texture ripples
+rendermode 1
+
+scale 2
+scalevar 1
+scaledampfactor -3.9
+mainalpha 0.7
+
+impactdamp 0.2
+colwater 1
+
+mainalpha 1
+
+intensity 0
+maxparticles 0
+startparticles 1
+
+lightmaps 1
+display 2
+gravity 0
+

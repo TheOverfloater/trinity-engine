@@ -1,0 +1,30 @@
+life 1.5
+lifevar 0.5
+
+fadedelay 0.5
+
+minvel 3
+maxvel 5
+
+maxofs 2
+
+texture particle_white
+rendermode 2
+
+scale 3
+scalevar 1
+scaledampdelay 0.01
+scaledampfactor -6
+
+collision 0
+rotationvel 80
+rotationdamp 0.02
+
+impactdamp 0.2
+
+gravity 0.001
+mainalpha 0.3
+
+startparticles 6
+
+lightmaps 1

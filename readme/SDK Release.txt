@@ -1,0 +1,69 @@
+Trinity Rendering Engine - Copyright Andrew Lucas 2009-2012
+Version 3.08f
+
+The Trinity Engine is free software, distributed in the hope th-
+at it will be useful, but WITHOUT ANY WARRANTY; without even the 
+implied warranty of MERCHANTABILITY or FITNESS FOR A PARTICULAR 
+PURPOSE. See the GNU Lesser General Public License for more det-
+ails.
+
+This package contains all of the rendering assets of the engine
+used by the mods Half-Life Episode Two, From Beneath, Snow Fac-
+ility and some other mods. This contains numerous graphical im-
+provements and performance improvements over the original game
+engine, adding more flexibility and overall better usage.
+
+Most of the code was written by me, but a lot of code released
+in the Paranoia SDK and the Quake 1 SDK was used as a base, for
+that they deserve all the thanks in the world. The entire code
+base is released with all the edited files in a clean SDK copy
+for ease of porting to an already established SDK. The code was
+too massive to be a tutorial.
+
+The engine has a motherlode of features that I will not document
+here, but in seperate files as it's a big list, but you'll need
+to read those in order to use the engine to it's full extent and
+be happy with it. I've installed a lot of safeties though, so in
+the worst case you'll be greeted with console warnings.
+
+You'll need the modifications made to the delta.lst file in ord-
+er to use these features, so I suggest you just copy/paste it f-
+rom the demo's mod folder. All the necessary files are available
+in the demo for the basic functionality to work.
+
+All entities are listed with their FGD entries in SDK - Entities.
+
+I strongly suggest you look around the project settings to see w-
+hat kind of optimization options I had enabled. They really help
+on improving performance, and without them you won't get the top-
+most fps you can achieve. I strongly urge you to set your optimi-
+zation options up the same way.
+
+You can freely use this code in any of your works, however only
+if you give proper credit to the creators credited in this file
+below.
+
+For any possible future updates, check this link:
+https://skydrive.live.com/redir.aspx?cid=ce9cc3fbfe20ab9a&resid=CE9CC3FBFE20AB9A!161&parid=root
+If you have anything to report, write an e-mail to:
+boeschitt@hotmail.com
+
+Andrew "CastleBravo" Lucas
+Richard "MrNameless" Rohac
+Neil "Jed" Jedrzejewski
+Yriy "BUzer" Sitnikov
+
+DevIL Team
+Id Software
+Valve Software
+
+Those who helped a lot:
+Moritz "Ryokeen" Ulte
+Max "Protector" Vollmer
+
+Gary_McTaggart for the ported SDK I used.
+
+Thanks for your help.
+
+
+

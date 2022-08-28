@@ -1,0 +1,28 @@
+systemshape 1
+systemsize 16
+overbright 1
+
+numframes 14
+framesizex 32
+framesizey 64
+framerate 14
+
+life 4
+lifevar 1
+
+fadein 0.5
+fadedelay 1
+
+pcolr 255
+pcolg 255
+pcolb 255
+
+texture flames
+display 1
+
+scale 30
+scalevar 8
+scaledampfactor 8
+
+intensity 10
+maxparticles -1

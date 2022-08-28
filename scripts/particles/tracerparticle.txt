@@ -1,0 +1,33 @@
+life 6
+lifevar 3
+overbright 1
+
+minvel 20
+maxvel 40
+
+maxofs 5
+
+texture redflare
+rendermode 0
+
+pcolr 255
+pcolg 255
+pcolb 255
+
+scale 1
+scalevar 0.5
+scaledampfactor -2
+
+rotationvel 80
+rotationdamp 0.001
+
+mainalpha 1
+gravity 0
+
+intensity 0.5
+maxparticles -1
+
+tracerdist 0.1
+
+create angel.txt
+deathcreate puff.txt

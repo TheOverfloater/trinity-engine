@@ -1,0 +1,33 @@
+systemshape 2
+systemsize 400
+
+life -1
+
+fadein 1
+
+pcolr 255
+pcolg 255
+pcolb 255
+
+texture rain
+display 1
+mainalpha 0.75
+
+scale 6
+scalevar 2
+
+collision 5
+
+gravity 0.5
+
+intensity 500
+maxparticles -1
+
+windx 25
+windy 25
+windvar 600
+
+windtype 2
+windmult 0.5
+create rain_splashes1.txt
+watercreate ripples.txt

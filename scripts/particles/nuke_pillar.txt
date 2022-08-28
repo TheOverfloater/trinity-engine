@@ -1,0 +1,28 @@
+life 60
+
+minvel 0
+maxvel 0
+
+texture particle_grey
+rendermode 2
+
+pcolr 128
+pcolg 0
+pcolb 0
+
+scolr 128
+scolg 128
+scolb 128
+
+ctransd 10
+ctranst 20
+
+scale 10
+scalevar 3
+
+rotationvel 80
+rotationdamp 0.02
+
+impactdamp 0.2
+
+startparticles 2

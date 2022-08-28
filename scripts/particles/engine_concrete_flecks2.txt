@@ -1,0 +1,26 @@
+life 5
+lifevar 1
+
+fadedelay 4
+
+minvel 130
+maxvel 320
+
+maxofs 120
+
+texture fleck_cement2
+rendermode 2
+
+scale 2.1
+scalevar 0.5
+
+collision 2
+rotationvel 80
+
+impactdamp 0.3
+
+gravity 1.82
+
+startparticles 3
+
+lightmaps 1

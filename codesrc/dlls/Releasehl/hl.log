@@ -1,0 +1,9 @@
+﻿Build started 8/28/2022 1:16:40 PM.
+     1>Project "D:\Games\Half-Life\trinity\codesrc\dlls\hl.vcxproj" on node 2 (clean target(s)).
+     1>_PrepareForClean:
+         Deleting file ".\Releasehl\hl.lastbuildstate".
+     1>Done Building Project "D:\Games\Half-Life\trinity\codesrc\dlls\hl.vcxproj" (clean target(s)).
+
+Build succeeded.
+
+Time Elapsed 00:00:00.01

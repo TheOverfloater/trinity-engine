@@ -1,0 +1,29 @@
+life 5
+lifevar 1
+
+fadedelay 4
+
+minvel 150
+maxvel 290
+
+maxofs 120
+
+texture fleck_carpet
+rendermode 2
+
+scale 1.7
+scalevar 0.2
+
+collision 2
+rotationvel 60
+
+veldamp 0.9
+veldampdelay 0.01
+
+impactdamp 0.1
+
+gravity 0.1
+
+startparticles 7
+
+lightmaps 1

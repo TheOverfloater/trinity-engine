@@ -1,0 +1,31 @@
+life 0.5
+lifevar 0.1
+
+systemshape 1
+systemsize 1
+randomdir 1
+
+fadedelay 0.3
+
+minvel 10
+maxvel 15
+
+texture blood_core
+rendermode 2
+
+scale 3
+scalevar 1
+scaledampfactor -30
+
+rotationvel 90
+rotationvar 30
+
+pcolr 150
+pcolg 0
+pcolb 0
+
+gravity 0.05
+
+startparticles 8
+
+lightmaps 3

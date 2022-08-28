@@ -1,0 +1,34 @@
+randomdir 1
+
+life 5
+lifevar 1
+
+fadedelay 4
+
+minvel 410
+maxvel 600
+
+maxofs 60
+
+texture fleck_cement1
+rendermode 2
+
+scale 3.5
+scalevar 3
+
+collision 2
+rotationvel 80
+rotationdamp 0.02
+
+impactdamp 0.6
+
+gravity 1.4
+
+startparticles 10
+intensity 240
+maxparticles 20
+
+lightmaps 1
+
+tracerdist 6
+create engine_explosion_cloud.txt

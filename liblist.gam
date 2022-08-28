@@ -1,0 +1,19 @@
+// Valve Game Info file
+//  These are key/value pairs.  Certain mods will use different settings.
+//
+//For any possible future updates, check this link:
+//https://skydrive.live.com/?cid=ce9cc3fbfe20ab9a&sc=documents&uc=1&id=CE9CC3FBFE20AB9A%21103
+//If you have anything to report, write an e-mail to:
+//boeschitt@hotmail.com
+
+game "Trinity Renderers"
+startmap "c1a0"
+trainmap "t0a0"
+mpentity "info_player_deathmatch"
+gamedll "dlls\hl.dll"
+gamedll_linux "dlls/hl_i386.so"
+
+type "singleplayer_only"
+
+rating "9.2"
+svonly "0"

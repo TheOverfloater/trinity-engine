@@ -1,0 +1,45 @@
+systemsize 500
+
+life 4
+lifevar 1
+
+fadein 0.2
+fadedelay 2.8
+
+minvel 5
+maxvel 6
+
+maxofs 0.1
+
+pcolr 60
+pcolg 70
+pcolb 80
+
+texture animated
+framesizex 64
+framesizey 64
+numframes 20
+framerate 5
+
+veldampdelay 2
+veldamp -0.4
+
+scale 4
+scalevar 1
+scaledampdelay 0.001
+scaledampfactor -40
+colwater 1
+
+collision 5
+rotationvel 30
+rotationdamp 0
+create fountain_splashes1.txt
+
+impactdamp 0.9
+
+gravity 0.01
+colwater 1
+
+intensity 1
+maxparticles -1
+maxparticlevar 10

@@ -1,0 +1,20 @@
+life 4
+lifevar 1
+
+fadedelay 0.3
+
+texture smoke02
+rendermode 0
+mainalpha 0.18
+
+scale 0.8
+scaledampfactor -25
+
+rotationvel 60
+rotationdamp 0.01
+
+startparticles 1
+
+pcolr 128
+pcolg 128
+pcolb 138

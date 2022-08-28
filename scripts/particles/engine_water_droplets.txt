@@ -1,0 +1,29 @@
+life 5
+lifevar 1
+
+fadedelay 4
+
+minvel 110
+maxvel 200
+
+maxofs 60
+
+texture water_drop
+rendermode 2
+
+scale 1.0
+scalevar 0.4
+
+collision 1
+rotationvel 80
+
+impactdamp 0.2
+
+gravity 1.4
+mainalpha 0.5
+
+pcolr 128
+pcolg 128
+pcolb 140
+
+startparticles 5

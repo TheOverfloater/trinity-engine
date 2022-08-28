@@ -1,0 +1,6 @@
+fogend 400
+fogstart 100
+fresnel 1
+colr 64
+colg 80
+colb 90

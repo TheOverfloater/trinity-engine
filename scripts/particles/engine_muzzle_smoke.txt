@@ -1,0 +1,29 @@
+randomdir 1
+
+life 0.7
+lifevar 0.2
+
+fadedelay 0.3
+
+minvel 3
+maxvel 5
+
+maxofs 2
+
+texture particle_black
+rendermode 2
+
+scale 0.5
+scalevar 0.1
+scaledampdelay 0.01
+scaledampfactor -8
+
+rotationvel 80
+rotationdamp 0.02
+
+gravity 0.01
+
+startparticles 2
+mainalpha 0.2
+
+lightmaps 1

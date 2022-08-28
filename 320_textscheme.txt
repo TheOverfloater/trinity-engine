@@ -1,0 +1,48 @@
+// 320x240 text scheme file
+
+// DEFAULT BUTTON TEXT
+SchemeName = "Primary Button Text"
+FontName = "Lucida console"
+FontSize = 7
+FgColor = "255 170 0 255"
+BgColor = "0 0 0 141"
+FgColorArmed = "255 255 255 255"
+BgColorArmed = "255 170 0 67"
+
+// COMMAND MENU TEXT
+SchemeName = "CommandMenu Text"
+FontName = "Lucida console"
+FontSize = 7
+FgColor = "255 170 0 255"
+BgColor = "0 0 0 141"
+FgColorArmed = "255 255 255 255"
+BgColorArmed = "255 170 0 67"
+
+// SCOREBOARD TEXT
+SchemeName = "Scoreboard Text"
+FontName = "Lucida console"
+FontSize = 7
+FontWeight = 0
+
+// TITLE FONT in TFC selection menus
+SchemeName = "Title Font"
+FontName = "Arial"
+FontSize = 15
+FgColor = "255 170 0 255"
+
+// CLASSDESC, MAPDESC, MOTD text windows
+SchemeName = "Briefing Text"
+FontName = "Lucida console"
+FontSize = 9
+FontWeight = 0
+FgColor = "255 170 0 255"
+
+// Team info text (list of players, etc)
+// fgColor is automatically set to the teams color
+SchemeName = "Team Info Text"
+FontName = "Lucida console"
+FontSize = 9
+FontWeight = 0
+
+
+

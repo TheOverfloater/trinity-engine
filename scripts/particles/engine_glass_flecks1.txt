@@ -1,0 +1,25 @@
+life 5
+lifevar 1
+
+fadedelay 4
+
+minvel 28
+maxvel 180
+
+maxofs 120
+
+texture fleck_glass1
+
+scale 1.8
+scalevar 0.3
+
+collision 2
+rotationvel 80
+
+impactdamp 0.3
+
+gravity 1.32
+
+startparticles 3
+
+lightmaps 1

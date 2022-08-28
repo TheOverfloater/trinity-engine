@@ -1,0 +1,34 @@
+randomdir 1
+systemsize 5
+
+life 3.2
+lifevar 0.8
+
+fadedelay 2
+
+minvel 220
+maxvel 260
+
+maxofs 11
+
+texture smoke03
+rendermode 2
+
+scale 38
+scalevar 10
+scaledampdelay 0.8
+scaledampfactor -55
+
+rotationvel 80
+rotationdamp 0.02
+
+veldamp 2.3
+veldampdelay 0.01
+
+collision 4
+gravity 0
+mainalpha 0.3
+
+startparticles 60
+
+lightmaps 1

@@ -1,0 +1,26 @@
+life 5
+lifevar 1
+
+fadedelay 4
+
+minvel 70
+maxvel 300
+
+maxofs 120
+
+texture fleck_dirt
+rendermode 2
+
+scale 0.85
+scalevar 0.2
+
+collision 2
+rotationvel 60
+
+impactdamp 0.6
+
+gravity 1
+
+startparticles 7
+
+lightmaps 1

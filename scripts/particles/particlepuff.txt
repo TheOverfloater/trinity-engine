@@ -1,0 +1,40 @@
+systemsize 500
+overbright 1
+randomdir 1
+
+life 4
+lifevar 1
+
+fadedelay 2.8
+
+minvel 20
+maxvel 30
+
+maxofs 5
+
+pcolr 255
+pcolg 128
+pcolb 92
+
+scolr 255
+scolg 128
+scolb -255
+
+ctransd 0.3
+ctranst 0.4
+ctransv 0.3
+
+texture yellowflare
+
+scale 2
+scalevar 1
+scaledampfactor -5
+
+collision 2
+rotationvel 120
+
+impactdamp 0.9
+
+gravity 0
+
+startparticles 660

@@ -1,0 +1,25 @@
+life 0.35
+
+fadedelay 0.4
+
+texture rainsplash
+rendermode 1
+display 1
+
+framesizex 64
+framesizey 64
+numframes 14
+framerate 40
+
+mainalpha 1
+
+scale 7
+scalevar 0.5
+
+gravity 0
+
+startparticles 1
+
+pcolr 255
+pcolg 255
+pcolb 255

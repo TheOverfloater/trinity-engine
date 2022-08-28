@@ -1,0 +1,27 @@
+life 5
+lifevar 1
+
+fadedelay 4
+
+minvel 40
+maxvel 280
+
+maxofs 120
+
+texture fleck_wood2
+rendermode 2
+
+scale 2.5
+scalevar 2
+
+collision 2
+rotationvel 60
+rotationdamp -0.01
+
+impactdamp 0.7
+
+gravity 1
+
+startparticles 8
+
+lightmaps 1
