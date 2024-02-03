@@ -384,6 +384,18 @@ struct msurface_s
 };
 
 #else
+
+#ifdef HL25_UPDATE
+// Thanks to *(int*)0 = 0XDEADBEEF for this info
+typedef struct mdisplaylist_s
+{
+	unsigned int gl_displaylist;
+	int rendermode;
+	float scrolloffset;
+	int renderDetailTexture;
+} mdisplaylist_t;
+#endif
+
 //
 //  hardware renderer - QW 'gl_model.h'
 //  06/23/2002 2230 MAH
@@ -424,7 +436,9 @@ typedef struct msurface_s
 //  byte        *samples;                   // [numstyles*surfsize]
     color24     *samples;                   // note: this is the actual lightmap data for this surface
     decal_t     *pdecals;
-
+#ifdef HL25_UPDATE
+	mdisplaylist_t displaylist;
+#endif
 } msurface_t;
 #endif
 

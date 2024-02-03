@@ -2402,6 +2402,7 @@ public:
 
 LINK_ENTITY_TO_CLASS( item_generic, CItemGeneric );
 LINK_ENTITY_TO_CLASS( item_prop, CItemGeneric );
+LINK_ENTITY_TO_CLASS( prop_physics, CItemGeneric );
 
 TYPEDESCRIPTION	CItemGeneric::m_SaveData[] = 
 {
@@ -2434,7 +2435,7 @@ void CItemGeneric :: Precache ( void )
 
 void CItemGeneric::Spawn( void )
 {
-	if ( pev->targetname )
+	if ( pev->targetname || !strcmp(STRING(pev->classname), "prop_physics") )
 	{
 		Precache();
 		SET_MODEL( ENT(pev), STRING(pev->model));
