@@ -1287,10 +1287,28 @@ void R_DisableSteamMSAA( void )
 	gEngfuncs.pfnClientCmd("gl_round_down 0");
 	gEngfuncs.pfnClientCmd("_restart");
 }
+#ifdef HL25_UPDATE
+bool g_areVertexShadersEnabled = false;
+bool g_areFragmentShadersEnabled = false;
+GLint g_shaderProgramBinding = 0;
+#endif
+
+bool g_glStateSaved = false;
 
 void R_SaveGLStates( void )
 {
-	glPushAttrib(GL_TEXTURE_BIT);
+	assert(g_glStateSaved == false);
+	g_glStateSaved = true;
+
+#ifdef HL25_UPDATE
+	g_areVertexShadersEnabled = (glIsEnabled(GL_VERTEX_SHADER) == GL_TRUE) ? true : false;
+	g_areFragmentShadersEnabled = (glIsEnabled(GL_FRAGMENT_SHADER) == GL_TRUE) ? true : false;
+
+	glGetIntegerv(GL_PROGRAM_BINDING_ARB, &g_shaderProgramBinding);
+	gBSPRenderer.glUseProgram(0);
+#endif
+
+	glPushAttrib(GL_TEXTURE_BIT|GL_CLIENT_VERTEX_ARRAY_BIT);
 
 	glGetIntegerv(GL_ACTIVE_TEXTURE_ARB, &g_savedGLState.active_texunit);
 	glGetIntegerv(GL_CLIENT_ACTIVE_TEXTURE_ARB, &g_savedGLState.active_clienttexunit);
@@ -1306,10 +1324,26 @@ void R_SaveGLStates( void )
 	glGetIntegerv(GL_ALPHA_TEST_FUNC, &g_savedGLState.alphatest_func);
 	glGetFloatv(GL_ALPHA_TEST_REF, &g_savedGLState.alphatest_value);
 
+	// Disable these to avoid slowdown bug
+	glDisableClientState(GL_VERTEX_ARRAY);
+	glDisableClientState(GL_NORMAL_ARRAY);
+	glDisableClientState(GL_COLOR_ARRAY);
+
+	gBSPRenderer.glClientActiveTextureARB(GL_TEXTURE1);
+	glDisableClientState(GL_TEXTURE_COORD_ARRAY);
+	gBSPRenderer.glClientActiveTextureARB(GL_TEXTURE2);
+	glDisableClientState(GL_TEXTURE_COORD_ARRAY);
+	gBSPRenderer.glClientActiveTextureARB(GL_TEXTURE3);
+	glDisableClientState(GL_TEXTURE_COORD_ARRAY);
+	gBSPRenderer.glClientActiveTextureARB(GL_TEXTURE0);
+	glDisableClientState(GL_TEXTURE_COORD_ARRAY);
 }
 
 void R_RestoreGLStates( void )
 {
+	if(!g_glStateSaved)
+		return;
+
 	glPopAttrib();
 
 	// load saved matrix for steam version
@@ -1331,6 +1365,18 @@ void R_RestoreGLStates( void )
 		glDisable(GL_ALPHA_TEST);
 
 	glAlphaFunc(g_savedGLState.alphatest_func, g_savedGLState.alphatest_value);
+
+#ifdef HL25_UPDATE
+	if(g_areVertexShadersEnabled)
+		glEnable(GL_VERTEX_SHADER);
+
+	if(g_areVertexShadersEnabled)
+		glEnable(GL_FRAGMENT_SHADER);
+
+	gBSPRenderer.glUseProgram(g_shaderProgramBinding);
+#endif
+
+	g_glStateSaved = false;
 }
 
 /*

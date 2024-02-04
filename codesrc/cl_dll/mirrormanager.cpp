@@ -450,7 +450,7 @@ void CMirrorManager::DrawMirrors( void )
 		model_t *model = m_pMirrors[i].entity->model;
 		msurface_t *psurf = &model->surfaces[model->firstmodelsurface];
 
-		gBSPRenderer.DrawPolyFromArray(psurf->polys);
+		gBSPRenderer.DrawPolyFromArray(gBSPRenderer.m_pWorld->surfaces, psurf);
 		psurf->visframe = gBSPRenderer.m_iFrameCount;// For decals
 		
 		glPopMatrix();

@@ -4148,7 +4148,11 @@ void CStudioModelRenderer::StudioSetTextureFlags( void )
 			{
 				for(int n = 0; n < pmeshes[m].numnorms; n++, pnormbone++)
 				{
-					if((ptexture[pskinref[pmeshes[m].skinref]].flags & STUDIO_NF_CHROME)
+					int meshskinref = pmeshes[m].skinref;
+					if(meshskinref > (m_pTextureHeader->numtextures - 1))
+						meshskinref = (m_pTextureHeader->numtextures - 1);
+
+					if((ptexture[pskinref[meshskinref]].flags & STUDIO_NF_CHROME)
 						&& !(pbones[*pnormbone].flags & STUDIO_HAS_CHROME))
 					{
 						pbones[*pnormbone].flags |= STUDIO_HAS_CHROME;
@@ -4205,7 +4209,12 @@ void CStudioModelRenderer::StudioSetTextureFlags( void )
 			{
 				for(int n = 0; n < pmeshes[m].numnorms; n++, pnormbone++)
 				{
-					if((ptexture[pskinref[pmeshes[m].skinref]].flags & STUDIO_NF_CHROME) && !(pbones[pnormbone[0]].flags & STUDIO_HAS_CHROME))
+					int meshskinref = pmeshes[m].skinref;
+					if(meshskinref > (m_pTextureHeader->numtextures - 1))
+						meshskinref = (m_pTextureHeader->numtextures - 1);
+
+					if((ptexture[pskinref[meshskinref]].flags & STUDIO_NF_CHROME) 
+						&& !(pbones[pnormbone[0]].flags & STUDIO_HAS_CHROME))
 						pbones[*pnormbone].flags |= STUDIO_HAS_CHROME;
 				}
 			}
@@ -4381,7 +4390,11 @@ void CStudioModelRenderer::StudioDrawPoints ( void )
 	//
 	for(int i = 0, j = 0; i < m_pSubModel->nummesh; i++)
 	{
-		if(ptexture[pskinref[pmeshes[i].skinref]].flags & STUDIO_NF_CHROME || m_bChromeShell)
+		int meshskinref = pmeshes[i].skinref;
+		if(meshskinref > (m_pTextureHeader->numtextures - 1))
+			meshskinref = (m_pTextureHeader->numtextures - 1);
+
+		if(ptexture[pskinref[meshskinref]].flags & STUDIO_NF_CHROME || m_bChromeShell)
 			StudioChromeForMesh(j, &pmeshes[i]);
 		
 		// Increment anyway
@@ -4393,7 +4406,11 @@ void CStudioModelRenderer::StudioDrawPoints ( void )
 	//
 	for (int j = 0; j < m_pSubModel->nummesh; j++) 
 	{
-		mstudiotexture_t *ptex = &ptexture[pskinref[pmeshes[j].skinref]];
+		int meshskinref = pmeshes[j].skinref;
+		if(meshskinref > (m_pTextureHeader->numtextures - 1))
+			meshskinref = (m_pTextureHeader->numtextures - 1);
+
+		mstudiotexture_t *ptex = &ptexture[pskinref[meshskinref]];
 
 		if(ptex->flags & STUDIO_NF_ADDITIVE && !m_bUseBlending)
 			continue;
@@ -4424,7 +4441,11 @@ void CStudioModelRenderer::StudioDrawPoints ( void )
 
 		for (int j = 0; j < m_pSubModel->nummesh; j++) 
 		{
-			mstudiotexture_t *ptex = &ptexture[pskinref[pmeshes[j].skinref]];
+			int meshskinref = pmeshes[j].skinref;
+			if(meshskinref > (m_pTextureHeader->numtextures - 1))
+				meshskinref = (m_pTextureHeader->numtextures - 1);
+
+			mstudiotexture_t *ptex = &ptexture[pskinref[meshskinref]];
 
 			if (!(ptex->flags & STUDIO_NF_ADDITIVE))
 				continue;
@@ -5073,10 +5094,6 @@ StudioRenderModelEXT
 */
 void CStudioModelRenderer::StudioRenderModelEXT( void )
 {
-	// Save texture states before rendering, so we don't
-	// cause any bugs in HL by changing texture binds, etc
-	R_SaveGLStates();
-
 	// I don't give a shit, make sure
 	glPushMatrix();
 	glMatrixMode(GL_MODELVIEW);
@@ -5111,9 +5128,6 @@ void CStudioModelRenderer::StudioRenderModelEXT( void )
 
 	if(m_pCvarModelsBBoxDebug->value > 0)
 		StudioDrawBBox();
-
-	// Restore saved states
-	R_RestoreGLStates();
 }
 
 /*
@@ -5141,8 +5155,12 @@ void CStudioModelRenderer::StudioDrawPointsEXT( void )
 
 	for (int i = 0; i < m_pSubModel->nummesh; i++ )
 	{
+		int meshskinref = pmesh[i].skinref;
+		if(meshskinref > (m_pTextureHeader->numtextures - 1))
+			meshskinref = (m_pTextureHeader->numtextures - 1);
+
 		vbomesh_t *pvbomesh = &m_pVBOSubModel->meshes[i];
-		mstudiotexture_t *ptex = &ptexture[pskinref[pmesh[i].skinref]];
+		mstudiotexture_t *ptex = &ptexture[pskinref[meshskinref]];
 
 		if ((ptex->flags & STUDIO_NF_ADDITIVE) && !m_bUseBlending)
 			continue;
@@ -5170,8 +5188,12 @@ void CStudioModelRenderer::StudioDrawPointsEXT( void )
 
 		for (int i = 0; i < m_pSubModel->nummesh; i++ )
 		{
+			int meshskinref = pmesh[i].skinref;
+			if(meshskinref > (m_pTextureHeader->numtextures - 1))
+				meshskinref = (m_pTextureHeader->numtextures - 1);
+
 			vbomesh_t *pvbomesh = &m_pVBOSubModel->meshes[i];
-			mstudiotexture_t *ptex = &ptexture[pskinref[pmesh[i].skinref]];
+			mstudiotexture_t *ptex = &ptexture[pskinref[meshskinref]];
 
 			if (!(ptex->flags & STUDIO_NF_ADDITIVE))	// buz
 				continue;
@@ -5905,7 +5927,11 @@ void CStudioModelRenderer::StudioDecalExternal( vec3_t vpos, vec3_t vnorm, const
 
 			for(int k = 0; k < m_pVBOSubModel->nummeshes; k++)
 			{
-				if(ptexture[pskinref[pmesh[k].skinref]].flags & STUDIO_NF_ALPHATEST)
+				int meshskinref = pmesh[k].skinref;
+				if(meshskinref > (m_pTextureHeader->numtextures - 1))
+					meshskinref = (m_pTextureHeader->numtextures - 1);
+
+				if(ptexture[pskinref[meshskinref]].flags & STUDIO_NF_ALPHATEST)
 					continue;
 
 				vbomesh_t *pmesh = &m_pVBOSubModel->meshes[k];
@@ -6270,7 +6296,11 @@ void CStudioModelRenderer::StudioDrawPointsSolid ( void )
 	//
 	for (int j = 0; j < m_pSubModel->nummesh; j++) 
 	{
-		mstudiotexture_t *ptex = &ptexture[pskinref[pmeshes[j].skinref]];
+		int meshskinref = pmeshes[j].skinref;
+		if(meshskinref > (m_pTextureHeader->numtextures - 1))
+			meshskinref = (m_pTextureHeader->numtextures - 1);
+
+		mstudiotexture_t *ptex = &ptexture[pskinref[meshskinref]];
 
 		if(ptex->flags & STUDIO_NF_ALPHATEST)
 		{
@@ -6431,8 +6461,12 @@ void CStudioModelRenderer::StudioDrawPointsSolidEXT( void )
 
 	for (int i = 0; i < m_pSubModel->nummesh; i++ )
 	{
+		int meshskinref = pmesh[i].skinref;
+		if(meshskinref > (m_pTextureHeader->numtextures - 1))
+			meshskinref = (m_pTextureHeader->numtextures - 1);
+
 		vbomesh_t *pvbomesh = &m_pVBOSubModel->meshes[i];
-		mstudiotexture_t *ptex = &ptexture[pskinref[pmesh[i].skinref]];
+		mstudiotexture_t *ptex = &ptexture[pskinref[meshskinref]];
 
 		if(ptex->flags & STUDIO_NF_ALPHATEST)
 		{
@@ -6457,7 +6491,6 @@ void CStudioModelRenderer::StudioDrawPointsSolidEXT( void )
 
 		if(ptex->flags & STUDIO_NF_ALPHATEST)
 		{
-
 			gBSPRenderer.SetTexEnvs(ENVSTATE_OFF);
 			gBSPRenderer.glActiveTextureARB(GL_TEXTURE0_ARB);
 			glMatrixMode(GL_TEXTURE);

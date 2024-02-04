@@ -268,6 +268,10 @@ void CBSPRenderer::Init( void )
 	glProgramLocalParameter4fARB	= (PFNGLPROGRAMLOCALPARAMETER4FARBPROC)wglGetProcAddress("glProgramLocalParameter4fARB");
 	glFogCoordPointer				= (PFNGLFOGCOORDPOINTEREXTPROC)wglGetProcAddress("glFogCoordPointer");
 
+#ifdef HL25_UPDATE
+	glUseProgram					= (PFNGLUSEPROGRAMPROC)wglGetProcAddress("glUseProgram");
+#endif
+
 	//
 	// Initialize basic stuff
 	//
@@ -392,6 +396,9 @@ void CBSPRenderer::Init( void )
 		m_bShaderSupport = false;
 		m_bDontPromptShadersError = false;
 	}
+
+	// Mark as contents_solid
+	m_dummyNode.contents = CONTENTS_SOLID;
 };
 
 /*
@@ -464,6 +471,20 @@ void CBSPRenderer::VidInit( void )
 		m_pSurfaces = nullptr;
 		m_iNumSurfaces = NULL;
 	}
+
+	if(m_pSurfacePointersArray)
+	{
+		delete[] m_pSurfacePointersArray;
+		m_pSurfacePointersArray = nullptr;
+	}
+
+	if(m_pDetailObjectSurfaces)
+	{
+		delete [] m_pDetailObjectSurfaces;
+		m_pDetailObjectSurfaces = nullptr;
+	}
+
+	m_numDetailSurfaces = 0;
 
 	if(m_bShadowSupport)
 	{
@@ -1038,13 +1059,14 @@ DisableWorldDrawing
 */
 void CBSPRenderer::DisableWorldDrawing( ref_params_t *pparams )
 {
-	vec3_t wcoord;
-	AngleVectors ( pparams->viewangles, pparams->forward, pparams->right, pparams->up );
-	VectorMASSE(pparams->vieworg, -100, pparams->forward, wcoord);
-	memcpy(m_fSavedMinsMaxs, m_pWorld->nodes[0].minmaxs, 6*sizeof(float));
+	if (m_pTrueRootNode)
+	{
+		gEngfuncs.Con_Printf("%s - Called without having been restored first!\n");
+		return;
+	}
 
-	VectorCopy(wcoord, m_pWorld->nodes[0].minmaxs);
-	VectorCopy(wcoord, m_pWorld->nodes[0].minmaxs + 3);
+	m_pTrueRootNode = m_pWorld->nodes;
+	m_pWorld->nodes = &m_dummyNode;
 };
 
 /*
@@ -1055,7 +1077,16 @@ RestoreWorldDrawing
 */
 void CBSPRenderer::RestoreWorldDrawing( void )
 {
-	memcpy(m_pWorld->nodes[0].minmaxs, m_fSavedMinsMaxs, 6 * sizeof(float));
+	// Shouldn't happen
+	if (!m_pTrueRootNode)
+		return;
+
+	// Restore and clear pointer
+	m_pWorld->nodes = m_pTrueRootNode;
+	m_pTrueRootNode = nullptr;
+
+	// Mark all leaves with current visframe
+	R_MarkLeaves(m_pViewLeaf);
 };
 
 /*
@@ -1090,22 +1121,20 @@ ClearDetailObjects
 */
 void CBSPRenderer::ClearDetailObjects( void )
 {
-	for(int i = 0; i < m_iNumDetailObjects; i++)
+	for(int i = 0; i < m_numDetailSurfaces; i++)
 	{
-		for(int j = 0; j < m_pDetailObjects[i].numsurfaces; j++)
-		{
-			if(m_pDetailObjects[i].surfaces[j].polys)
-				free(m_pDetailObjects[i].surfaces[j].polys);
+		msurface_t* psurf = &m_pDetailObjectSurfaces[i];
 
-			if(m_pDetailObjects[i].surfaces[j].plane)
-				delete [] m_pDetailObjects[i].surfaces[j].plane;
+		if(psurf->polys)
+			free(psurf->polys);
 
-			if(m_pDetailObjects[i].surfaces[j].texinfo)
-				delete [] m_pDetailObjects[i].surfaces[j].texinfo;
-		}
+		if(psurf->plane)
+			delete psurf->plane;
 
-		delete [] m_pDetailObjects[i].surfaces;
+		if(psurf->texinfo)
+			delete psurf->texinfo;
 	}
+
 	memset(m_pDetailObjects, 0, sizeof(m_pDetailObjects));
 	m_iNumDetailObjects = NULL;
 	m_iNumDetailSurfaces = NULL;
@@ -1133,6 +1162,8 @@ void CBSPRenderer::LoadDetailFile( void )
 	bool bNeedsUpload[MAX_LIGHTMAPS];
 	memset(bNeedsUpload, 0, sizeof(bNeedsUpload));
 
+	vector<msurface_t> surfacesArray;
+
 	memcpy(&m_iNumDetailObjects, &pFile[iOffset], sizeof(int));iOffset+=4;
 	for(int i = 0; i < m_iNumDetailObjects; i++)
 	{
@@ -1145,11 +1176,11 @@ void CBSPRenderer::LoadDetailFile( void )
 		if(!iNumSurfaces)
 			continue;
 
-		m_pDetailObjects[i].surfaces = new msurface_t[iNumSurfaces];
-		memset(m_pDetailObjects[i].surfaces, 0, sizeof(msurface_t)*iNumSurfaces);
+		m_pDetailObjects[i].firstsurface = surfacesArray.size();
+		surfacesArray.resize(surfacesArray.size() + iNumSurfaces);
 		m_pDetailObjects[i].numsurfaces = iNumSurfaces; m_iNumDetailSurfaces += iNumSurfaces;
 
-		msurface_t *psurfaces = &m_pDetailObjects[i].surfaces[0];
+		msurface_t *psurfaces = &surfacesArray[m_pDetailObjects[i].firstsurface];
 		for(int j = 0; j < iNumSurfaces; j++)
 		{
 			char szTexName[16];
@@ -1250,6 +1281,9 @@ void CBSPRenderer::LoadDetailFile( void )
 		}
 	}
 	gEngfuncs.COM_FreeFile(pFile);
+
+	m_pDetailObjectSurfaces = new msurface_t[surfacesArray.size()];
+	memcpy(m_pDetailObjectSurfaces, surfacesArray.data(), sizeof(msurface_t)*surfacesArray.size());
 
 	//
 	// Get leaf numbers
@@ -1493,11 +1527,12 @@ void CBSPRenderer::GenerateVertexArray( void )
 
 		iNumFaces++;
 	}
+
 	if(m_iNumDetailObjects)
 	{
 		for(int i = 0; i < m_iNumDetailObjects; i++)
 		{
-			msurface_t *psurf = &m_pDetailObjects[i].surfaces[0];
+			msurface_t *psurf = m_pDetailObjectSurfaces + m_pDetailObjects[i].firstsurface;
 			for(int j = 0; j < m_pDetailObjects[i].numsurfaces; j++, psurf++)
 			{
 				iNumVerts += 3 + (psurf->polys->numverts-3)*3;
@@ -1505,6 +1540,14 @@ void CBSPRenderer::GenerateVertexArray( void )
 			}
 		}
 	}
+
+	int nbPointers = m_pWorld->numsurfaces;
+	if(m_iNumDetailObjects)
+		nbPointers += m_numDetailSurfaces;
+
+	m_pSurfacePointersArray = new brushface_t*[nbPointers];
+	for(int i = 0; i < iNumFaces; i++)
+		m_pSurfacePointersArray[i] = nullptr;
 
 	// Set array up
 	m_pBufferData = new brushvertex_t[iNumVerts];
@@ -1519,7 +1562,8 @@ void CBSPRenderer::GenerateVertexArray( void )
 	memset(m_pFacesExtraData, 0, sizeof(brushface_t)*iNumFaces);
 	m_iTotalFaceCount = iNumFaces;
 
-	for(int i = 0; i < m_pWorld->numsurfaces; i++)
+	int pointerIndex = 0;
+	for(int i = 0; i < m_pWorld->numsurfaces; i++, pointerIndex++)
 	{
 		if (surfaces[i].flags & SURF_DRAWSKY)
 			continue;
@@ -1532,7 +1576,6 @@ void CBSPRenderer::GenerateVertexArray( void )
 		if(!(surfaces[i].flags & SURF_DRAWTURB) && poly->next)
 			continue; // lets be sure
 
-		poly->flags = iCurFace;
 		brushface_t* ext = &m_pFacesExtraData[iCurFace];
 		VectorCopy(surfaces[i].texinfo->vecs[0], ext->s_tangent);
 		VectorCopy(surfaces[i].texinfo->vecs[1], ext->t_tangent);
@@ -1540,6 +1583,9 @@ void CBSPRenderer::GenerateVertexArray( void )
 		VectorNormalize(ext->t_tangent);
 		VectorCopy(surfaces[i].plane->normal, ext->normal);
 		ext->index = i;
+
+		// Set ptr
+		m_pSurfacePointersArray[pointerIndex] = ext;
 
 		if (surfaces[i].flags & SURF_PLANEBACK)
 			VectorInverse(ext->normal);
@@ -1680,32 +1726,35 @@ void CBSPRenderer::GenerateVertexArray( void )
 	if(m_iNumDetailObjects)
 	{
 		int iCounter = 0;
-		for(int i = 0; i < m_iNumDetailObjects; i++)
+		for(int i = 0; i < m_iNumDetailObjects; i++, pointerIndex++)
 		{
 			detailobject_t *pObject = &m_pDetailObjects[i];
 			for(int j = 0; j < pObject->numsurfaces; j++)
 			{
-				glpoly_t *poly = pObject->surfaces[j].polys;
+				msurface_t *psurf = m_pDetailObjectSurfaces + pObject->firstsurface;
+				glpoly_t *poly = psurf->polys;
 
 				if(poly->numverts < 3)
 					continue;
 
-				poly->flags = iCurFace;
 				brushface_t* ext = &m_pFacesExtraData[iCurFace];
-				VectorCopy(pObject->surfaces[j].texinfo->vecs[0], ext->s_tangent);
-				VectorCopy(pObject->surfaces[j].texinfo->vecs[1], ext->t_tangent);
+				VectorCopy(psurf->texinfo->vecs[0], ext->s_tangent);
+				VectorCopy(psurf->texinfo->vecs[1], ext->t_tangent);
 				VectorNormalize(ext->s_tangent);
 				VectorNormalize(ext->t_tangent);
-				VectorCopy(pObject->surfaces[j].plane->normal, ext->normal);
+				VectorCopy(psurf->plane->normal, ext->normal);
 				ext->index = m_pWorld->numsurfaces+iCounter; iCounter++;
 
-				if (pObject->surfaces[j].flags & SURF_PLANEBACK)
+				// Set ptr
+				m_pSurfacePointersArray[pointerIndex] = ext;
+
+				if (psurf->flags & SURF_PLANEBACK)
 					VectorInverse(ext->normal);
 
 				// Link up with renderlist textures
 				for(int k = 0; k < m_iNumTextures; k++)
 				{
-					if(!strcmp(m_pNormalTextureList[k].name, pObject->surfaces[j].texinfo->texture->name))
+					if(!strcmp(m_pNormalTextureList[k].name, psurf->texinfo->texture->name))
 					{
 						m_pSurfaces[ext->index].regtexture = &m_pNormalTextureList[k];
 						m_pSurfaces[ext->index].mptexture = &m_pMultiPassTextureList[k];
@@ -1720,11 +1769,11 @@ void CBSPRenderer::GenerateVertexArray( void )
 						dtex = &m_pDetailTextures[m_pSurfaces[ext->index].regtexture->offsets[2]];
 				}
 
-				float column = pObject->surfaces[j].lightmaptexturenum%LIGHTMAP_NUMROWS;
-				float row = (pObject->surfaces[j].lightmaptexturenum/LIGHTMAP_NUMROWS)%LIGHTMAP_NUMCOLUMNS;
+				float column = psurf->lightmaptexturenum%LIGHTMAP_NUMROWS;
+				float row = (psurf->lightmaptexturenum/LIGHTMAP_NUMROWS)%LIGHTMAP_NUMCOLUMNS;
 
 				ext->start_vertex = iCurVert;
-				for (glpoly_t *bp = pObject->surfaces[j].polys; bp; bp = bp->next)
+				for (glpoly_t *bp = psurf->polys; bp; bp = bp->next)
 				{
 					brushvertex_t pVertexes[3];
 					float *v = bp->verts[0];
@@ -2135,12 +2184,15 @@ void CBSPRenderer::DrawWorld( void )
 			DrawBrushModel(m_pRenderEntities[i], false);
 	}
 
-	// Draw detail objects
-	PrepareRenderer();
-	DrawDetails();
-	RenderFirstPass(true);
-	DrawDynamicLightsForDetails();
-	RenderFinalPasses();
+	if(m_iNumDetailObjects > 0)
+	{
+		// Draw detail objects
+		PrepareRenderer();
+		DrawDetails();
+		RenderFirstPass(true);
+		DrawDynamicLightsForDetails();
+		RenderFinalPasses(true);
+	}
 
 	DisableVertexArray();
 	ResetRenderer();
@@ -2208,19 +2260,20 @@ void CBSPRenderer::DrawDetails( void )
 				
 				for(int k = 0; k < pCurObject->numsurfaces; k++)
 				{
-					if (pCurObject->surfaces[k].dlightframe != m_iFrameCount)
+					msurface_t *psurf = m_pDetailObjectSurfaces + pCurObject->firstsurface + k;
+					if (psurf->dlightframe != m_iFrameCount)
 					{
-						pCurObject->surfaces[k].dlightbits = 0;
-						pCurObject->surfaces[k].dlightframe = m_iFrameCount;
+						psurf->dlightbits = 0;
+						psurf->dlightframe = m_iFrameCount;
 					}
-					pCurObject->surfaces[k].dlightbits |= 1<<j;
+					psurf->dlightbits |= 1<<j;
 				}
 			}
 		}
 			
 		bool bDynLit = DynamicLighted(pCurObject->mins, pCurObject->maxs);
 		pCurObject->visframe = m_iFrameCount; // For dynlights
-		msurface_t *psurf = &pCurObject->surfaces[0];
+		msurface_t *psurf = m_pDetailObjectSurfaces + pCurObject->firstsurface;
 		for(int j = 0; j < pCurObject->numsurfaces; j++, psurf++)
 		{
 			float dot;
@@ -2230,7 +2283,7 @@ void CBSPRenderer::DrawDetails( void )
 			if (((psurf->flags & SURF_PLANEBACK) && (dot < -BACKFACE_EPSILON)) ||
 				(!(psurf->flags & SURF_PLANEBACK) && (dot > BACKFACE_EPSILON)))
 			{
-				SurfaceToChain(psurf, bDynLit);
+				SurfaceToChain(m_pDetailObjectSurfaces, psurf, bDynLit);
 				psurf->visframe = m_iFrameCount;
 			}
 		}
@@ -2245,10 +2298,17 @@ RenderFirstPass
 */
 void CBSPRenderer::RenderFirstPass( bool bSecond )
 {
+	msurface_t* psurfbase = nullptr;
 	if(bSecond)
+	{
 		Bind2DTexture(GL_TEXTURE0_ARB, m_iDetailLightmapIndex);
+		psurfbase = m_pDetailObjectSurfaces;
+	}
 	else
+	{
 		Bind2DTexture(GL_TEXTURE0_ARB, m_iEngineLightmapIndex);
+		psurfbase = m_pWorld->surfaces;
+	}
 
 	//Render normal ones first
 	for(int i = 0; i < m_iNumTextures; i++)
@@ -2282,7 +2342,7 @@ void CBSPRenderer::RenderFirstPass( bool bSecond )
 		{
 			while(psurface)
 			{
-				DrawScrollingPoly(psurface);
+				DrawScrollingPoly(psurfbase, psurface);
 				psurface = psurface->texturechain;
 				m_iWorldPolyCounter++;
 			}
@@ -2291,7 +2351,7 @@ void CBSPRenderer::RenderFirstPass( bool bSecond )
 		{
 			while(psurface)
 			{
-				DrawPolyFromArray(psurface->polys);
+				DrawPolyFromArray(psurfbase, psurface);
 				psurface = psurface->texturechain;
 				m_iWorldPolyCounter++;
 			}
@@ -2323,7 +2383,7 @@ void CBSPRenderer::RenderFirstPass( bool bSecond )
 			psurface = pTexture->texturechain;
 			while(psurface)
 			{
-				DrawPolyFromArray(psurface->polys);
+				DrawPolyFromArray(psurfbase, psurface);
 				psurface = psurface->texturechain;
 			}
 
@@ -2361,7 +2421,7 @@ void CBSPRenderer::RenderFirstPass( bool bSecond )
 			Bind2DTexture(GL_TEXTURE1_ARB, pTexture->gl_texturenum);
 			while(psurface)
 			{
-				DrawPolyFromArray(psurface->polys);
+				DrawPolyFromArray(psurfbase, psurface);
 				psurface = psurface->texturechain;
 			}
 
@@ -2372,7 +2432,7 @@ void CBSPRenderer::RenderFirstPass( bool bSecond )
 			psurface = pTexture->texturechain;
 			while(psurface)
 			{
-				DrawPolyFromArray(psurface->polys);
+				DrawPolyFromArray(psurfbase, psurface);
 				psurface = psurface->texturechain;
 			}
 			glDepthFunc(GL_LEQUAL);
@@ -2386,7 +2446,7 @@ void CBSPRenderer::RenderFirstPass( bool bSecond )
 			SetTexEnvs( ENVSTATE_REPLACE );
 			while(psurface)
 			{
-				DrawPolyFromArray(psurface->polys);
+				DrawPolyFromArray(psurfbase, psurface);
 				psurface = psurface->texturechain;
 				m_iWorldPolyCounter++;
 			}
@@ -2403,7 +2463,7 @@ RenderFinalPasses
 
 ====================
 */
-void CBSPRenderer::RenderFinalPasses( void )
+void CBSPRenderer::RenderFinalPasses( bool bSecond )
 {
 	if(!m_bShaderSupport || m_pCvarWorldShaders->value <= 0)
 		return;
@@ -2419,6 +2479,12 @@ void CBSPRenderer::RenderFinalPasses( void )
 
 	if(gHUD.m_pFogSettings.active)
 		glDisable(GL_FOG);
+
+	msurface_t* psurfbase = nullptr;
+	if(bSecond)
+		psurfbase = m_pDetailObjectSurfaces;
+	else
+		psurfbase = m_pWorld->surfaces;
 
 	glEnable(GL_BLEND);
 	glDepthMask(GL_FALSE);
@@ -2453,7 +2519,7 @@ void CBSPRenderer::RenderFinalPasses( void )
 		{
 			while(psurface)
 			{
-				DrawScrollingPoly(psurface);
+				DrawScrollingPoly(psurfbase, psurface);
 				psurface = psurface->texturechain;
 			}
 		}
@@ -2461,7 +2527,7 @@ void CBSPRenderer::RenderFinalPasses( void )
 		{
 			while(psurface)
 			{
-				DrawPolyFromArray(psurface->polys);
+				DrawPolyFromArray(psurfbase, psurface);
 				psurface = psurface->texturechain;
 			}
 		}
@@ -2478,7 +2544,7 @@ void CBSPRenderer::RenderFinalPasses( void )
 			msurface_t *s = m_pMultiPassTextureList[i].texturechain;
 			while(s)
 			{
-				DrawPolyFromArray(s->polys);
+				DrawPolyFromArray(psurfbase, s);
 				msurface_t *next = s->texturechain;
 				s = next;
 			}
@@ -2513,7 +2579,7 @@ void CBSPRenderer::RenderFinalPasses( void )
 			msurface_t *s = m_pMultiPassTextureList[i].texturechain;
 			while(s)
 			{
-				DrawPolyFromArray(s->polys);
+				DrawPolyFromArray(psurfbase, s);
 				msurface_t *next = s->texturechain;
 				s = next;
 			}
@@ -2617,7 +2683,7 @@ void CBSPRenderer::RecursiveWorldNode(mnode_t *node)
 			if ( surf->flags & SURF_DRAWTURB )
 				EmitWaterPolys(surf);
 			else
-				SurfaceToChain(surf, bIsLit);
+				SurfaceToChain(m_pWorld->surfaces, surf, bIsLit);
 
 			m_iWorldPolyCounter++;
 		}
@@ -2816,7 +2882,7 @@ void CBSPRenderer::DrawBrushModel ( cl_entity_t *pEntity, bool bStatic )
 				continue;
 
 			if (psurf->flags & SURF_DRAWTURB) EmitWaterPolys(psurf);
-			else SurfaceToChain(psurf, bIsLit);
+			else SurfaceToChain(m_pWorld->surfaces, psurf, bIsLit);
 		}
 	}
 
@@ -2850,9 +2916,12 @@ DrawPolyFromArray
 
 ====================
 */
-void CBSPRenderer::DrawPolyFromArray( glpoly_t *p )
+void CBSPRenderer::DrawPolyFromArray( msurface_t* psurfbase, msurface_t* psurf )
 {
-	glDrawArrays(GL_TRIANGLES, m_pFacesExtraData[p->flags].start_vertex, m_pFacesExtraData[p->flags].num_vertexes );
+	int surfaceIndex = psurf - psurfbase;
+	brushface_t *pbrushface = m_pSurfacePointersArray[surfaceIndex];
+
+	glDrawArrays(GL_TRIANGLES, pbrushface->start_vertex, pbrushface->num_vertexes );
 }
 
 /*
@@ -2861,16 +2930,18 @@ SurfaceToChain
 
 ====================
 */
-void CBSPRenderer::SurfaceToChain(msurface_t *s, bool dynlit)
+void CBSPRenderer::SurfaceToChain(msurface_t* psurfbase, msurface_t *s, bool dynlit)
 {
-	brushface_t *pFace = &m_pFacesExtraData[s->polys->flags];
-	clientsurfdata_t *pData = &m_pSurfaces[pFace->index];
+	int surfaceIndex = s - psurfbase;
+	brushface_t *pbrushface = m_pSurfacePointersArray[surfaceIndex];
+	clientsurfdata_t *pclsurf = &m_pSurfaces[pbrushface->index];
 
 	for (int i = 1; i < MAXLIGHTMAPS && s->styles[i] != 255 || s->dlightframe; i++)
 	{
-		if (m_iLightStyleValue[s->styles[i]] != m_pSurfaces[pFace->index].cached_light[i] || s->dlightframe)
+		
+		if (m_iLightStyleValue[s->styles[i]] != pclsurf->cached_light[i] || s->dlightframe)
 		{
-			BuildLightmap(s, pFace->index, m_pEngineLightmaps);
+			BuildLightmap(s, surfaceIndex, m_pEngineLightmaps);
 
 			int smax = (s->extents[0]>>4)+1;
 			int tmax = (s->extents[1]>>4)+1;
@@ -2878,21 +2949,21 @@ void CBSPRenderer::SurfaceToChain(msurface_t *s, bool dynlit)
 			glPixelStorei(GL_UNPACK_ALIGNMENT, 1);
 			glActiveTextureARB(GL_TEXTURE0_ARB);
 			Bind2DTexture(GL_TEXTURE0_ARB, m_iEngineLightmapIndex);
-			glTexSubImage2D(GL_TEXTURE_2D, 0, m_pSurfaces[pFace->index].light_s, m_pSurfaces[pFace->index].light_t, smax, tmax, GL_RGB, GL_UNSIGNED_BYTE, m_pBlockLights);
+			glTexSubImage2D(GL_TEXTURE_2D, 0, pclsurf->light_s, pclsurf->light_t, smax, tmax, GL_RGB, GL_UNSIGNED_BYTE, m_pBlockLights);
 			glPixelStorei(GL_UNPACK_ALIGNMENT, 4);
 			break;
 		}
 	}
 	
-	if(dynlit && pData->mptexture)
+	if(dynlit && pclsurf->mptexture)
 	{
-		s->texturechain = pData->mptexture->texturechain;
-		pData->mptexture->texturechain = s;
+		s->texturechain = pclsurf->mptexture->texturechain;
+		pclsurf->mptexture->texturechain = s;
 	}
-	else if(pData->regtexture)
+	else if(pclsurf->regtexture)
 	{
-		s->texturechain = pData->regtexture->texturechain;
-		pData->regtexture->texturechain = s;
+		s->texturechain = pclsurf->regtexture->texturechain;
+		pclsurf->regtexture->texturechain = s;
 	}
 };
 
@@ -2902,7 +2973,7 @@ DrawScrollingPoly
 
 ====================
 */
-void CBSPRenderer::DrawScrollingPoly(msurface_t *s)
+void CBSPRenderer::DrawScrollingPoly(msurface_t* psurfbase, msurface_t *s)
 {
 	glpoly_t *p = s->polys;
 	float *v = p->verts[0];
@@ -2914,13 +2985,14 @@ void CBSPRenderer::DrawScrollingPoly(msurface_t *s)
 	if(m_pCurrentEntity->curstate.rendercolor.r == 0)
 		speed *= -1;
 
-	brushface_t *pFace = &m_pFacesExtraData[p->flags];
-	brushvertex_t *pVert = &m_pBufferData[pFace->start_vertex];
+	int surfaceIndex = s - psurfbase;
+	brushface_t *pbrushface = m_pSurfacePointersArray[surfaceIndex];
+	brushvertex_t *pVert = &m_pBufferData[pbrushface->start_vertex];
 
 	glBegin( GL_TRIANGLES );
 	if(m_iTexPointer[0] == TC_LIGHTMAP)
 	{
-		for(int i = 0; i < pFace->num_vertexes; i++, pVert++)
+		for(int i = 0; i < pbrushface->num_vertexes; i++, pVert++)
 		{
 			glMultiTexCoord2fARB(GL_TEXTURE0_ARB, pVert->lightmaptexcoord[0], pVert->lightmaptexcoord[1]);
 			glMultiTexCoord2fARB(GL_TEXTURE1_ARB, pVert->texcoord[0]+speed, pVert->texcoord[1]);
@@ -2930,7 +3002,7 @@ void CBSPRenderer::DrawScrollingPoly(msurface_t *s)
 	}
 	else
 	{
-		for(int i = 0; i < pFace->num_vertexes; i++, pVert++)
+		for(int i = 0; i < pbrushface->num_vertexes; i++, pVert++)
 		{
 			glMultiTexCoord2fARB(GL_TEXTURE0_ARB, pVert->texcoord[0]+speed, pVert->texcoord[1]);
 			glMultiTexCoord2fARB(GL_TEXTURE1_ARB, pVert->detailtexcoord[0]+speed, pVert->detailtexcoord[1]);
@@ -3361,7 +3433,7 @@ void CBSPRenderer::UploadLightmaps( void )
 	int iSurfaceIndex = m_pWorld->numsurfaces;
 	for(int i = 0; i < m_iNumDetailObjects; i++)
 	{
-		msurface_t *psurf = m_pDetailObjects[i].surfaces;
+		msurface_t *psurf = m_pDetailObjectSurfaces + m_pDetailObjects[i].firstsurface;
 		for(int j = 0; j < m_pDetailObjects[i].numsurfaces; j++, psurf++)
 		{
 			// Upload it
@@ -4614,6 +4686,8 @@ void CBSPRenderer::DrawDecals( void )
 	if (!m_iNumDecals && !m_iNumStaticDecals)
 		return;
 
+	ResetCache();
+
 	glColorMask(GL_TRUE, GL_TRUE, GL_TRUE, GL_TRUE);
 
 	glDepthFunc(GL_LEQUAL);
@@ -5082,7 +5156,7 @@ void CBSPRenderer::DrawDynamicLightsForDetails( void )
 					continue;		
 			}
 
-			msurface_t *psurf = &pObject->surfaces[0];
+			msurface_t *psurf = m_pDetailObjectSurfaces + pObject->firstsurface;
 			for (int i = 0; i < pObject->numsurfaces; i++, psurf++)
 			{
 				if (psurf->visframe == m_iFrameCount) // visible
@@ -5094,7 +5168,7 @@ void CBSPRenderer::DrawDynamicLightsForDetails( void )
 						(!(psurf->flags & SURF_PLANEBACK) && (dot > BACKFACE_EPSILON)) )
 					{
 						if(dot < m_pCurrentDynLight->radius)
-							DrawPolyFromArray(psurf->polys);
+							DrawPolyFromArray(m_pDetailObjectSurfaces, psurf);
 					}
 				}
 			}
@@ -5288,7 +5362,7 @@ void CBSPRenderer::RecursiveWorldNodeLight( mnode_t *node )
 			SSEDotProductSub(&dot, &m_vCurDLightOrigin, &surf->plane->normal, &surf->plane->dist);
 
 			if(dot < m_pCurrentDynLight->radius)
-				DrawPolyFromArray(surf->polys);
+				DrawPolyFromArray(m_pWorld->surfaces, surf);
 		}
 	}
 
@@ -5477,7 +5551,7 @@ void CBSPRenderer::DrawEntityFacesForLight( cl_entity_t *pEntity )
 				(!(psurf->flags & SURF_PLANEBACK) && (dot > BACKFACE_EPSILON)) )
 			{
 				if(dot < m_pCurrentDynLight->radius)
-					DrawPolyFromArray(psurf->polys);
+					DrawPolyFromArray(m_pWorld->surfaces, psurf);
 			}
 		}
 	}
@@ -6053,7 +6127,7 @@ void CBSPRenderer::RecursiveWorldNodeSolid(mnode_t *node)
 			if( surf->flags & SURF_DRAWTURB )
 				continue;
 
-			DrawPolyFromArray(surf->polys);
+			DrawPolyFromArray(m_pWorld->surfaces, surf);
 		}
 	}
 
@@ -6097,7 +6171,7 @@ void CBSPRenderer::DrawDetailsSolid( void )
 		}
 
 		pCurObject->visframe = m_iFrameCount; // For dynlights
-		msurface_t *psurf = &pCurObject->surfaces[0];
+		msurface_t *psurf = m_pDetailObjectSurfaces + pCurObject->firstsurface;
 		for(int j = 0; j < pCurObject->numsurfaces; j++, psurf++)
 		{
 			float dot;
@@ -6110,7 +6184,7 @@ void CBSPRenderer::DrawDetailsSolid( void )
 				if(pCurObject->rendermode == kRenderTransAlpha)
 					Bind2DTexture(GL_TEXTURE0_ARB, psurf->texinfo->texture->gl_texturenum);
 
-				DrawPolyFromArray(psurf->polys);
+				DrawPolyFromArray(m_pDetailObjectSurfaces, psurf);
 				psurf->visframe = m_iFrameCount;
 			}
 		}
@@ -6216,7 +6290,7 @@ m_pCurrentEntity->angles[0] = -m_pCurrentEntity->angles[0];
 				continue;
 
 			Bind2DTexture(GL_TEXTURE0_ARB, psurf->texinfo->texture->gl_texturenum);
-			DrawPolyFromArray(psurf->polys);
+			DrawPolyFromArray(m_pWorld->surfaces, psurf);
 		}
 	}
 

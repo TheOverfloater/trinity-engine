@@ -62,7 +62,7 @@ public:
 	void DrawNormalTriangles( void );
 	void DrawTransparentTriangles( void );
 	void RenderFirstPass( bool bSecond = false );
-	void RenderFinalPasses( void );
+	void RenderFinalPasses( bool bSecond = false );
 	void DrawWorld( void );
 
 	void GetRenderEnts ( void );
@@ -101,10 +101,10 @@ public:
 	void DrawBrushModel ( cl_entity_t *pEntity, bool bStatic = false );
 	void RecursiveWorldNode ( mnode_t *node );
 
-	void SurfaceToChain( msurface_t *s, bool dynlit );
-	void DrawScrollingPoly( msurface_t *s );
-	void EmitWaterPolys( msurface_t *fa );
-	void DrawPolyFromArray( glpoly_t *p );
+	void SurfaceToChain( msurface_t* psurfbase, msurface_t *s, bool dynlit );
+	void DrawScrollingPoly( msurface_t* pbaseptr, msurface_t *psurf );
+	void EmitWaterPolys( msurface_t *psurf );
+	void DrawPolyFromArray( msurface_t* pbaseptr, msurface_t* psurf );
 
 	bool DynamicLighted( const vec3_t &vmins, const vec3_t &vmaxs );
 	void DrawDynamicLightsForWorld( void );
@@ -242,7 +242,8 @@ public:
 	vec3_t				m_vDLightMins;
 	vec3_t				m_vDLightMaxs;
 
-	float				m_fSavedMinsMaxs[6];
+	mnode_t*			m_pTrueRootNode;
+	mnode_t				m_dummyNode;
 	float				m_fSkySpeed;
 
 	cl_entity_t			*m_pRenderEntities[MAXRENDERENTS];
@@ -265,8 +266,13 @@ public:
 	color24				m_pDetailLightmaps[MAX_LIGHTMAPS*BLOCK_WIDTH*BLOCK_HEIGHT];
 	int					m_iDetailLightmapIndex;
 
+	brushface_t**		m_pSurfacePointersArray;
+
 	clientsurfdata_t	*m_pSurfaces;
 	int					m_iNumSurfaces;
+
+	msurface_t*			m_pDetailObjectSurfaces;
+	int					m_numDetailSurfaces;
 
 	detailobject_t		m_pDetailObjects[MAX_MAP_DETAILOBJECTS];
 	int					m_iNumDetailObjects;
@@ -317,6 +323,9 @@ public:
 	PFNGLPROGRAMLOCALPARAMETER4FARBPROC		glProgramLocalParameter4fARB;
 
 	PFNGLFOGCOORDPOINTEREXTPROC				glFogCoordPointer;
+#ifdef HL25_UPDATE
+	PFNGLUSEPROGRAMPROC						glUseProgram;
+#endif
 
 public:
 	customdecal_t		m_pDecals[MAX_CUSTOMDECALS];

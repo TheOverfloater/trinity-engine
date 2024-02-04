@@ -426,7 +426,7 @@ struct detailobject_t
 	vec3_t mins;
 	vec3_t maxs;
 
-	msurface_t *surfaces;
+	int firstsurface;
 	int numsurfaces;
 
 	short leafnums[MAX_ENT_LEAFS*2];

@@ -10,4 +10,14 @@
     <LocalDebuggerWorkingDirectory>D:\Games\Half-Life</LocalDebuggerWorkingDirectory>
     <DebuggerFlavor>WindowsLocalDebugger</DebuggerFlavor>
   </PropertyGroup>
+  <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Debug - HL25 Build|Win32'">
+    <LocalDebuggerCommand>D:\Games\Steam\steamapps\common\Half-Life\hl.exe</LocalDebuggerCommand>
+  </PropertyGroup>
+  <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Debug - HL25 Build|Win32'">
+    <LocalDebuggerCommandArguments>-console -32bpp -game trinity -steam</LocalDebuggerCommandArguments>
+  </PropertyGroup>
+  <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Debug - HL25 Build|Win32'">
+    <LocalDebuggerWorkingDirectory>D:\Games\Steam\steamapps\common\Half-Life</LocalDebuggerWorkingDirectory>
+    <DebuggerFlavor>WindowsLocalDebugger</DebuggerFlavor>
+  </PropertyGroup>
 </Project>

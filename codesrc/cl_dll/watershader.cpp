@@ -1245,7 +1245,7 @@ void CWaterShader::DrawWater( void )
 			gBSPRenderer.Bind2DTexture(GL_TEXTURE2_ARB, m_pCurWater->reflect);
 
 		for(int j = 0; j < m_pCurWater->numsurfaces; j++)
-			gBSPRenderer.DrawPolyFromArray(m_pCurWater->surfaces[j]->polys);
+			gBSPRenderer.DrawPolyFromArray(gBSPRenderer.m_pWorld->surfaces, m_pCurWater->surfaces[j]);
 	}
 
 	glDisable(GL_VERTEX_PROGRAM_ARB);
